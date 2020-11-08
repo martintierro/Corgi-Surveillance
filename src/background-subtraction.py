@@ -11,10 +11,12 @@ if args.algo == 'MOG2':
 else:
     backSub = cv.createBackgroundSubtractorKNN()
 capture = cv.VideoCapture()
-print(capture.open("test.mp4"))
+print(capture.open("test v2.mp4"))
 if not capture.isOpened():
     print('Unable to open')
     exit(0)
+
+i = 0
 while True:
     ret, frame = capture.read()
 
@@ -30,6 +32,8 @@ while True:
     
     cv.imshow('Frame', frame)
     cv.imshow('FG Mask', fgMask)
+    cv.imwrite('BG Mask'+str(i)+'.jpg',fgMask)
+    i=i+1
     
     keyboard = cv.waitKey(30)
     if keyboard == 'q' or keyboard == 27:
