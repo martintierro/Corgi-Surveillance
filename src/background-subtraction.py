@@ -4,14 +4,14 @@ import argparse
 parser = argparse.ArgumentParser(description='This program shows how to use background subtraction methods provided by \
                                               OpenCV. You can process both videos and images.')
 parser.add_argument('--input', type=str, help='Path to a video or a sequence of image.', default='vtest.avi')
-parser.add_argument('--algo', type=str, help='Background subtraction method (KNN, MOG2).', default='MOG2')
+parser.add_argument('--algo', type=str, help='Background subtraction method (KNN, MOG2).', default='KNN')
 args = parser.parse_args()
 if args.algo == 'MOG2':
     backSub = cv.createBackgroundSubtractorMOG2()
 else:
     backSub = cv.createBackgroundSubtractorKNN()
 capture = cv.VideoCapture()
-print(capture.open("test v2.mp4"))
+capture.open("bike.mp4")
 if not capture.isOpened():
     print('Unable to open')
     exit(0)
@@ -32,7 +32,7 @@ while True:
     
     cv.imshow('Frame', frame)
     cv.imshow('FG Mask', fgMask)
-    cv.imwrite('BG Mask'+str(i)+'.jpg',fgMask)
+    cv.imwrite('../frames/KNN BG Mask'+str(i)+'.jpg',fgMask)
     i=i+1
     
     keyboard = cv.waitKey(30)
