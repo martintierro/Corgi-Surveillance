@@ -10,17 +10,18 @@ if args.algo == 'MOG2':
     backSub = cv.createBackgroundSubtractorMOG2()
 else:
     backSub = cv.createBackgroundSubtractorKNN()
-capture = cv.VideoCapture("")
-if not capture.isOpened:
-    print('Unable to open: ' + args.input)
+capture = cv.VideoCapture()
+print(capture.open("test.mp4"))
+if not capture.isOpened():
+    print('Unable to open')
     exit(0)
 while True:
     ret, frame = capture.read()
+
     if frame is None:
         break
     
     fgMask = backSub.apply(frame)
-    
     
     cv.rectangle(frame, (10, 2), (100,20), (255,255,255), -1)
     cv.putText(frame, str(capture.get(cv.CAP_PROP_POS_FRAMES)), (15, 15),
