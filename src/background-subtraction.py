@@ -32,7 +32,10 @@ while True:
     
     cv.imshow('Frame', frame)
     cv.imshow('FG Mask', fgMask)
-    cv.imwrite('BG Mask'+str(i)+'.jpg',fgMask)
+
+    #Exports Frames
+    cv.imwrite('Frame '+str(i)+'.jpg',frame)
+    cv.imwrite('BG Mask '+str(i)+'.jpg',fgMask)
     i=i+1
     
     keyboard = cv.waitKey(30)
