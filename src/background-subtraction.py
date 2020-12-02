@@ -4,14 +4,14 @@ import argparse
 parser = argparse.ArgumentParser(description='This program shows how to use background subtraction methods provided by \
                                               OpenCV. You can process both videos and images.')
 parser.add_argument('--input', type=str, help='Path to a video or a sequence of image.', default='vtest.avi')
-parser.add_argument('--algo', type=str, help='Background subtraction method (KNN, MOG2).', default='KNN')
+parser.add_argument('--algo', type=str, help='Background subtraction method (KNN, MOG2).', default='MOG2')
 args = parser.parse_args()
 if args.algo == 'MOG2':
     backSub = cv.createBackgroundSubtractorMOG2()
 else:
     backSub = cv.createBackgroundSubtractorKNN()
 capture = cv.VideoCapture()
-capture.open("bike.mp4")
+capture.open("Pasig.mp4")
 if not capture.isOpened():
     print('Unable to open')
     exit(0)
@@ -32,9 +32,24 @@ while True:
     
     cv.imshow('Frame', frame)
     cv.imshow('FG Mask', fgMask)
-    cv.imwrite('../frames/KNN BG Mask'+str(i)+'.jpg',fgMask)
+
+
+    #Subtracts the mask overlap region from the image overlap region, puts it in image_sub
+    colored_mask = cv.bitwise_and(frame,frame,mask = fgMask)
+
+    frame_sub = frame-colored_mask
+
+    # Shows diff only:
+    cv.imshow('image_sub', frame_sub)
+
+    #Exports Frames
+    cv.imwrite('../Frames/Frame '+str(i)+'.jpg',frame)
+    cv.imwrite('../Mask/BG Mask '+str(i)+'.jpg',fgMask)
+    cv.imwrite('../Background/Background '+str(i)+'.jpg',frame_sub)
     i=i+1
     
+   
+
     keyboard = cv.waitKey(30)
     if keyboard == 'q' or keyboard == 27:
         break
