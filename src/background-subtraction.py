@@ -4,6 +4,9 @@ import numpy as np
 import argparse
 from matplotlib import pyplot as plt
 
+#contour threshold
+threshold_area = 500 
+
 kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE,(2,2))
 parser = argparse.ArgumentParser(description='This program shows how to use background subtraction methods provided by \
                                               OpenCV. You can process both videos and images.')
@@ -14,13 +17,24 @@ if args.algo == 'MOG2':
     backSub = cv.createBackgroundSubtractorMOG2()
 else:
     backSub = cv.createBackgroundSubtractorKNN()
+
+#Open Video Feed
 capture = cv.VideoCapture()
-capture.open("edsa-shaky.mp4")
+capture.open("383.mp4")
 if not capture.isOpened():
     print('Unable to open')
     exit(0)
 
 i = 0
+
+#Get video dimensions
+frame_width = int(capture.get(3))
+frame_height = int(capture.get(4))
+fps = capture.get(cv.CAP_PROP_FPS)
+
+#Save Video
+out = out = cv.VideoWriter('output.avi', cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width,frame_height))
+
 while True:
     ret, frame = capture.read()
 
@@ -32,7 +46,7 @@ while True:
     fgMask = backSub.apply(frame, fgMask, 0.005)
 
     #Apply Median Blur
-    blur = cv.medianBlur(fgMask,5)
+    blur = cv.medianBlur(fgMask, 13)
 
 
     #Morphological Transformations
@@ -49,7 +63,14 @@ while True:
     cv.putText(frame, str(capture.get(cv.CAP_PROP_POS_FRAMES)), (15, 15),
                cv.FONT_HERSHEY_SIMPLEX, 0.5 , (0,0,0))
     
-    
+    contours, hierarchy  = cv.findContours(blur, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+
+    for cnt in contours:
+        area = cv.contourArea(cnt)         
+        if area > threshold_area:
+            x,y,w,h = cv.boundingRect(cnt)
+            frame = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+
     cv.imshow('Frame', frame)
     cv.imshow('FG Mask', fgMask)
     cv.imshow("Median Blur", blur)
@@ -64,7 +85,6 @@ while True:
 
 
 
-
     #Subtracts the mask overlap region from the image overlap region, puts it in image_sub
     colored_mask = cv.bitwise_and(frame,frame,mask = blur)
 
@@ -72,6 +92,10 @@ while True:
 
     # Shows diff only:
     cv.imshow('image_sub', frame_sub)
+
+    # Write the frame into the file 'output.avi'
+    out.write(frame)
+ 
 
     #Exports Frames
     # cv.imwrite('../Frames/Frame '+str(i)+'.jpg',frame)
@@ -84,3 +108,11 @@ while True:
     keyboard = cv.waitKey(30)
     if keyboard == 'q' or keyboard == 27:
         break
+
+# When everything done, release the video capture and video write objects
+capture.release()
+out.release()
+
+ 
+# Closes all the frames
+cv.destroyAllWindows() 
