@@ -20,7 +20,7 @@ else:
 
 #Open Video Feed
 capture = cv.VideoCapture()
-capture.open("383.mp4")
+capture.open("bike.mp4")
 if not capture.isOpened():
     print('Unable to open')
     exit(0)
@@ -69,11 +69,12 @@ while True:
         area = cv.contourArea(cnt)         
         if area > threshold_area:
             x,y,w,h = cv.boundingRect(cnt)
-            frame = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+            frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
 
     cv.imshow('Frame', frame)
     cv.imshow('FG Mask', fgMask)
     cv.imshow("Median Blur", blur)
+    cv.imshow('Bounding Box', frame_box)
     # cv.imshow('Erosion', erosion)
     # cv.imshow('Opening', opening)
     # cv.imshow('Closing', closing)
@@ -98,8 +99,9 @@ while True:
  
 
     #Exports Frames
-    # cv.imwrite('../Frames/Frame '+str(i)+'.jpg',frame)
-    # cv.imwrite('../Mask/BG Mask '+str(i)+'.jpg',fgMask)
+    cv.imwrite('../Frames/Frame '+str(i)+'.jpg',frame)
+    cv.imwrite('../Boxes/Box '+str(i)+'.jpg',frame)
+    cv.imwrite('../Mask/BG Mask '+str(i)+'.jpg',fgMask)
     # cv.imwrite('../Background/Background '+str(i)+'.jpg',frame_sub)
     i=i+1
     
