@@ -132,3 +132,6 @@ dmypy.json
 /Frames
 /Mask
 /Boxes
+/BoundingBox
+/BoundingBoxesVideo
+/Foreground
