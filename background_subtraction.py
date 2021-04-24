@@ -53,12 +53,12 @@ def background_subtraction(filename, video_name):
         #Apply Median Blur
         blur = cv.medianBlur(fgMask, 5)
         
-        cv.imshow('Frame', frame)
+        # cv.imshow('Frame', frame)
         cv.imwrite('Frames/'+video_name+'/Frame '+str(i)+'.jpg',frame)
         
 
-        cv.imshow('FG Mask', fgMask)
-        cv.imshow("Median Blur", blur)
+        # cv.imshow('FG Mask', fgMask)
+        # cv.imshow("Median Blur", blur)
 
 
         #Subtracts the mask overlap region from the image overlap region, puts it in image_sub
@@ -84,7 +84,7 @@ def background_subtraction(filename, video_name):
                 frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
         out.write(frame)
         
-        cv.imshow('Bounding Box', frame_box)
+        # cv.imshow('Bounding Box', frame_box)
         
 
         #Exports Frames
@@ -93,8 +93,8 @@ def background_subtraction(filename, video_name):
         cv.imwrite('Mask/Median Blur/'+video_name+'/BG Mask '+str(i)+'.jpg',blur)
         cv.imwrite('Background/Raw BG/'+video_name+'/Background '+str(i)+'.jpg',frame_bg)
         cv.imwrite('Background/Median Blur/'+video_name+'/Background '+str(i)+'.jpg',frame_bg_blur)
-        cv.imwrite('Foreground/Raw BG/'+video_name+'/Foreground '+str(i)+'.jpg',frame_bg)
-        cv.imwrite('Foreground/Median Blur/'+video_name+'/Foreground '+str(i)+'.jpg',frame_bg_blur)
+        cv.imwrite('Foreground/Raw BG/'+video_name+'/Foreground '+str(i)+'.jpg',frame_fg)
+        cv.imwrite('Foreground/Median Blur/'+video_name+'/Foreground '+str(i)+'.jpg',frame_fg_blur)
 
         i=i+1   
 
