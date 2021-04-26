@@ -32,22 +32,26 @@ def super_resolution(filename, video_name):
 
         result = mean_fusion(reference, lr_images)
         
-        # result = cv.add(result, foreground)
-        # result = result + foreground
+        result = np.float32(result)
+        foreground = np.float32(foreground)
+        result = cv.add(result, foreground)
 
+        result = result.astype(np.uint8)
 
         cv.imwrite("Super Resolution/" + video_name + "/sr_" + str(i) + ".png", result)
 
 def mean_fusion(reference, lr_images):
     initialMat = reference
     sumMat = perform_interpolation(initialMat, scale, cv.INTER_LINEAR)
+    sumMat = np.float32(sumMat)
+
     for initialMat in lr_images:
         initialMat = perform_interpolation(initialMat, scale, cv.INTER_CUBIC)
-
+        initialMat= np.float32(initialMat)
         maskMat = produce_mask(initialMat)
-        # sumMat = cv.add(sumMat, initialMat)
-        # cv.add(sumMat, initialMat, sumMat, maskMat, initialMat.dtype)
         sumMat = cv.add(sumMat, initialMat, mask=maskMat)
+        # cv.add(sumMat, initialMat, sumMat, maskMat, initialMat.dtype)
+        # sumMat = cv.bitwise_and(sumMat, initialMat, mask=maskMat)
 
 
     sumMat = cv.divide(sumMat, (10, 10, 10, 10))
