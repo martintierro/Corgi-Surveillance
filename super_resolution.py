@@ -50,8 +50,6 @@ def mean_fusion(reference, lr_images):
         initialMat= np.float32(initialMat)
         maskMat = produce_mask(initialMat)
         sumMat = cv.add(sumMat, initialMat, mask=maskMat)
-        # cv.add(sumMat, initialMat, sumMat, maskMat, initialMat.dtype)
-        # sumMat = cv.bitwise_and(sumMat, initialMat, mask=maskMat)
 
 
     sumMat = cv.divide(sumMat, (10, 10, 10, 10))
