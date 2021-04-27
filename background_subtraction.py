@@ -37,24 +37,31 @@ def background_subtraction(filename, video_name):
     frame_width = int(capture.get(3))
     frame_height = int(capture.get(4))
     fps = capture.get(cv.CAP_PROP_FPS)
+    print(fps)
 
     #Save Video
     out = out = cv.VideoWriter('BoundingBoxesVideo/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width,frame_height))
 
+    bg_plate = cv.imread("Background/" + video_name + ".png")
+
     while True:
         ret, frame = capture.read()
-
         if frame is None:
             break
-        fgMask=0
+        frame = np.float32(frame)
+        bg_plate = np.float32(bg_plate)
+        fgMask=0.0
         #Get foreground Mask
         fgMask = backSub.apply(frame, fgMask, 0.005)
+        # fgMask = np.float32(fgMask)
 
         #Apply Median Blur
         blur = cv.medianBlur(fgMask, 5)
         
         # cv.imshow('Frame', frame)
+        frame = frame.astype(np.uint8)
         cv.imwrite('Frames/'+video_name+'/Frame '+str(i)+'.jpg',frame)
+        frame = np.float32(frame)
         
 
         # cv.imshow('FG Mask', fgMask)
@@ -64,15 +71,30 @@ def background_subtraction(filename, video_name):
         #Subtracts the mask overlap region from the image overlap region, puts it in image_sub
         colored_mask = cv.bitwise_and(frame,frame,mask = fgMask)
         colored_mask_blur = cv.bitwise_and(frame,frame,mask = blur)
+        colored_bg_mask = cv.bitwise_and(bg_plate, bg_plate, mask = fgMask)
+        colored_bg_mask_blur = cv.bitwise_and(bg_plate, bg_plate, mask = blur)
+
+        colored_mask = np.float32(colored_mask)
+        colored_mask_blur = np.float32(colored_mask_blur)
+        colored_bg_mask = np.float32(colored_bg_mask)
+        colored_bg_mask_blur = np.float32(colored_bg_mask_blur)
+
+
 
         frame_bg = frame-colored_mask
         frame_bg_blur = frame-colored_mask_blur
+        
+        frame_bg_plate = bg_plate - (bg_plate - colored_bg_mask)
+        frame_bg_plate_blur = bg_plate - (bg_plate - colored_bg_mask_blur)
 
         frame_fg = frame - frame_bg
         frame_fg_blur = frame - frame_bg_blur
+
+        frame_bg = cv.add(frame_bg, frame_bg_plate)
+        frame_bg_blur = cv.add(frame_bg_blur, frame_bg_plate_blur)
         # Shows diff only:
-        cv.imshow('image_sub', frame_bg)
-        cv.imshow('image_fore', frame_fg)
+        # cv.imshow('image_background', frame_bg)
+        # cv.imshow('image_foreground', frame_fg)
         # Write the frame into the file 'output.avi'
 
         contours, hierarchy  = cv.findContours(blur, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
@@ -82,10 +104,18 @@ def background_subtraction(filename, video_name):
             if area > threshold_area:
                 x,y,w,h = cv.boundingRect(cnt)
                 frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+        frame = frame.astype(np.uint8)
         out.write(frame)
         
         # cv.imshow('Bounding Box', frame_box)
         
+        fgMask = fgMask.astype(np.uint8)
+        blur = blur.astype(np.uint8)
+        frame_bg = frame_bg.astype(np.uint8)
+        frame_bg_blur = frame_bg_blur.astype(np.uint8)
+        frame_fg = frame_fg.astype(np.uint8)
+        frame_fg_blur = frame_fg_blur.astype(np.uint8)
+
 
         #Exports Frames
         cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.jpg',frame)

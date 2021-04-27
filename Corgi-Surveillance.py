@@ -3,6 +3,8 @@ from tkinter import Tk # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 from background_subtraction import background_subtraction
 from super_resolution import super_resolution
+from background_detection import background_detection
+
 def init_folders(video_name):
     if not os.path.exists("Frames"):
         os.makedirs("Frames")
@@ -81,6 +83,7 @@ def main():
     video_name = fn.split(".")[0]
 
     init_folders(video_name)
+    background_detection(filename, video_name)
     background_subtraction(filename, video_name)
     super_resolution(filename, video_name)
 
