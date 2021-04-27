@@ -40,7 +40,7 @@ def background_subtraction(filename, video_name):
     print(fps)
 
     #Save Video
-    out = out = cv.VideoWriter('BoundingBoxesVideo/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width,frame_height))
+    out = cv.VideoWriter('BoundingBoxesVideo/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width,frame_height))
 
     bg_plate = cv.imread("Background/" + video_name + ".png")
 

@@ -17,7 +17,7 @@ for idx_video = 1:length(video_name)
     n=numel(a)-1
     disp(n)
     for idx_frame = 9:n 				% exclude the first and last 2 frames
-        img_hr = imread(['D:/Projects/Thesis/Baseline B/SOF-VSR/TIP/data/test/Set/',video_name{idx_video},'/hr/hr_', num2str(idx_frame-9,'%d'),'.png']);
+        img_hr = imread(['E:/Projects/Thesis/Baseline B/SOF-VSR/TIP/data/test/Set/',video_name{idx_video},'/hr/hr_', num2str(idx_frame-9,'%d'),'.png']);
         img_sr = imread(['Super Resolution/',video_name{idx_video},'/sr_', num2str(idx_frame-9,'%d'),'.png']);
         
         h = min(size(img_hr, 1), size(img_sr, 1));

@@ -9,6 +9,17 @@ scale = 2
 
 def super_resolution(filename, video_name):
     frame_buffer = 10 - 1
+
+    capture = cv.VideoCapture()
+    capture.open(filename)
+
+    frame_width = int(capture.get(3))
+    frame_height = int(capture.get(4))
+    fps = capture.get(cv.CAP_PROP_FPS)
+
+    out = cv.VideoWriter('Super Resolution/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width * scale,frame_height * scale))
+
+    capture.release()
     
     bg_path = "Background/Median Blur/" + video_name +"/"
     fg_path = "Foreground/Median Blur/" + video_name +"/"
@@ -45,6 +56,9 @@ def super_resolution(filename, video_name):
         result = result.astype(np.uint8)
 
         cv.imwrite("Super Resolution/" + video_name + "/sr_" + str(i) + ".png", result)
+        out.write(result)
+    
+    out.release()
 
 def mean_fusion(reference, lr_images):
     initialMat = reference

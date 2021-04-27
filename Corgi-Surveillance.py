@@ -83,8 +83,8 @@ def main():
     video_name = fn.split(".")[0]
 
     init_folders(video_name)
-    background_detection(filename, video_name)
-    background_subtraction(filename, video_name)
+    # background_detection(filename, video_name)
+    # background_subtraction(filename, video_name)
     super_resolution(filename, video_name)
 
 if __name__ == "__main__":
