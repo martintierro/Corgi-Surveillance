@@ -6,7 +6,7 @@ import numpy as np
 def background_detection(filename, video_name):
 
     video = cv.VideoCapture(filename)
-    FOI = video.get(cv.CAP_PROP_FRAME_COUNT) * np.random.uniform(size=30)
+    FOI = video.get(cv.CAP_PROP_FRAME_COUNT) * np.random.uniform(size=60)
 
     frames = []
     for frameOI in FOI:
