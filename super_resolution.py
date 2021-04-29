@@ -40,7 +40,7 @@ def super_resolution(filename, video_name):
         foreground = cv.imread(fg_path + sorted_fg_files[i + frame_buffer])
         fg_mask = cv.imread(mask_path + sorted_mask_files[i + frame_buffer])
         foreground = perform_interpolation(foreground, scale, cv.INTER_LINEAR)
-        fg_mask = perform_interpolation(fg_mask, scale, cv.INTER_LINEAR)
+        fg_mask = perform_interpolation(fg_mask, scale, cv.INTER_NEAREST)
 
         lr_images = []
 
@@ -110,7 +110,5 @@ def combine_foreground(background, foreground, alpha):
     background = cv.multiply(1.0 - alpha, background)
 
     result = cv.add(foreground, background) * 255
-    
-    result = cv.blend(result, alpha)
 
     return result 

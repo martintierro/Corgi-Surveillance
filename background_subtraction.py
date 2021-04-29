@@ -51,22 +51,17 @@ def background_subtraction(filename, video_name):
         frame = np.float32(frame)
         bg_plate = np.float32(bg_plate)
         fgMask=0.0
-        #Get foreground Mask
+        # Get foreground Mask
         fgMask = backSub.apply(frame, fgMask, 0.005)
-        # fgMask = np.float32(fgMask)
 
         #Apply Median Blur
         blur = cv.medianBlur(fgMask, 5)
         
-        # cv.imshow('Frame', frame)
+        # Save Frame
         frame = frame.astype(np.uint8)
         cv.imwrite('Frames/'+video_name+'/Frame '+str(i)+'.jpg',frame)
         frame = np.float32(frame)
         
-
-        # cv.imshow('FG Mask', fgMask)
-        # cv.imshow("Median Blur", blur)
-
 
         #Subtracts the mask overlap region from the image overlap region, puts it in image_sub
         colored_mask = cv.bitwise_and(frame,frame,mask = fgMask)
@@ -95,7 +90,6 @@ def background_subtraction(filename, video_name):
         # Shows diff only:
         # cv.imshow('image_background', frame_bg)
         # cv.imshow('image_foreground', frame_fg)
-        # Write the frame into the file 'output.avi'
 
         contours, hierarchy  = cv.findContours(blur, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
 
@@ -106,8 +100,6 @@ def background_subtraction(filename, video_name):
                 frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
         frame = frame.astype(np.uint8)
         out.write(frame)
-        
-        # cv.imshow('Bounding Box', frame_box)
         
         fgMask = fgMask.astype(np.uint8)
         blur = blur.astype(np.uint8)
