@@ -84,8 +84,8 @@ def main():
 
     init_folders(video_name)
     background_detection(filename, video_name)
-    background_subtraction(filename, video_name)
-    super_resolution(filename, video_name)
+    background_frames, foreground_frames, fg_masks = background_subtraction(filename, video_name)
+    super_resolution(filename, video_name, background_frames, foreground_frames, fg_masks)
 
 if __name__ == "__main__":
     main()

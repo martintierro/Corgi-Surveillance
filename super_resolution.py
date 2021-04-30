@@ -4,10 +4,11 @@ from os import listdir
 from os.path import isfile, join
 import cv2 as cv
 import numpy as np
+from image_sharpener import sharpen
 
 scale = 2
 
-def super_resolution(filename, video_name):
+def super_resolution(filename, video_name, background_frames, foreground_frames, fg_masks):
     frame_buffer = 10 - 1
 
     capture = cv.VideoCapture()
@@ -21,31 +22,38 @@ def super_resolution(filename, video_name):
 
     capture.release()
     
-    bg_path = "Background/Median Blur/" + video_name +"/"
-    fg_path = "Foreground/Median Blur/" + video_name +"/"
+    # bg_path = "Background/Median Blur/" + video_name +"/"
+    # fg_path = "Foreground/Median Blur/" + video_name +"/"
     mask_path = "Mask/Median Blur/" + video_name +"/"
     
-    bg_files = [f for f in listdir(bg_path) if isfile(join(bg_path, f))]
-    fg_files = [f for f in listdir(fg_path) if isfile(join(fg_path, f))]
+    # bg_files = [f for f in listdir(bg_path) if isfile(join(bg_path, f))]
+    # fg_files = [f for f in listdir(fg_path) if isfile(join(fg_path, f))]
     mask_files = [f for f in listdir(mask_path) if isfile(join(mask_path, f))]
 
-    sorted_bg_files = natsort.natsorted(bg_files)
-    sorted_fg_files = natsort.natsorted(fg_files)
+    # sorted_bg_files = natsort.natsorted(bg_files)
+    # sorted_fg_files = natsort.natsorted(fg_files)
     sorted_mask_files = natsort.natsorted(mask_files)
 
-    for i in range(len(sorted_bg_files)-frame_buffer):
+    for i in range(len(background_frames)-frame_buffer):
         print("Run: " + str(i))
-        print("Reference: " + sorted_bg_files[i])
-        reference = cv.imread(bg_path + sorted_bg_files[i])
-        foreground = cv.imread(fg_path + sorted_fg_files[i + frame_buffer])
+        # print("Reference: " + background_frames[i])
+        # reference = cv.imread(bg_path + sorted_bg_files[i])
+        # foreground = cv.imread(fg_path + sorted_fg_files[i + frame_buffer])
         fg_mask = cv.imread(mask_path + sorted_mask_files[i + frame_buffer])
+        reference = background_frames[i]
+        foreground = foreground_frames[i + frame_buffer]
+        # fg_mask = fg_masks[i+frame_buffer]
         foreground = perform_interpolation(foreground, scale, cv.INTER_LINEAR)
         fg_mask = perform_interpolation(fg_mask, scale, cv.INTER_NEAREST)
+        # fg_mask = cv.cvtColor(fg_mask, cv.COLOR_GRAY2RGB)
 
         lr_images = []
 
         for j in range(frame_buffer):
-            lr_images.append(cv.imread(bg_path + sorted_bg_files[i+j+1]))
+            # lr_images.append(cv.imread(bg_path + sorted_bg_files[i+j+1]))
+            lr_image = background_frames[i+j+1]
+            # lr_image = sharpen(lr_image)
+            lr_images.append(lr_image)
 
         result = mean_fusion(reference, lr_images)
         

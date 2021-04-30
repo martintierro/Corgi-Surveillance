@@ -44,6 +44,10 @@ def background_subtraction(filename, video_name):
 
     bg_plate = cv.imread("Background/" + video_name + ".png")
 
+    mb_backgrounds = []
+    mb_foregrounds = []
+    mb_fg_masks = []
+
     while True:
         ret, frame = capture.read()
         if frame is None:
@@ -56,6 +60,10 @@ def background_subtraction(filename, video_name):
 
         #Apply Median Blur
         blur = cv.medianBlur(fgMask, 5)
+
+        kernel = np.ones((3,3),np.uint8)
+        # blur = cv.morphologyEx(blur,cv.MORPH_CLOSE, kernel)
+        blur = cv.morphologyEx(blur,cv.MORPH_OPEN, kernel)
         
         # Save Frame
         frame = frame.astype(np.uint8)
@@ -108,6 +116,9 @@ def background_subtraction(filename, video_name):
         frame_fg = frame_fg.astype(np.uint8)
         frame_fg_blur = frame_fg_blur.astype(np.uint8)
 
+        mb_backgrounds.append(frame_bg_blur)
+        mb_foregrounds.append(frame_fg_blur)
+        mb_fg_masks.append(fgMask)
 
         #Exports Frames
         cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.jpg',frame)
@@ -127,6 +138,8 @@ def background_subtraction(filename, video_name):
     # When everything done, release the video capture and video write objects
     capture.release()
     out.release()
+
+    return mb_backgrounds, mb_foregrounds, mb_fg_masks
 
     
     # Closes all the frames
