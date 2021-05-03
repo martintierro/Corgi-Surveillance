@@ -44,10 +44,28 @@ def background_subtraction(filename, video_name):
 
     bg_plate = cv.imread("Background/" + video_name + ".png")
 
+    #Variable declarations
     mb_backgrounds = []
     mb_foregrounds = []
     mb_fg_masks = []
-
+    fgMask = None
+    blur = None
+    kernel = np.ones((3,3),np.uint8)
+    frame = None
+    ret = None
+    colored_mask = None
+    colored_mask_blur = None
+    colored_bg_mask = None
+    colored_bg_mask_blur = None
+    frame_bg = None
+    frame_bg_blur = None
+    frame_bg_plate = None
+    frame_bg_plate_blur = None
+    frame_fg = None
+    frame_fg_blur = None
+    contours = None
+    hierarchy = None
+    
     while True:
         ret, frame = capture.read()
         if frame is None:
@@ -60,8 +78,7 @@ def background_subtraction(filename, video_name):
 
         #Apply Median Blur
         blur = cv.medianBlur(fgMask, 5)
-
-        kernel = np.ones((3,3),np.uint8)
+ 
         # blur = cv.morphologyEx(blur,cv.MORPH_CLOSE, kernel)
         blur = cv.morphologyEx(blur,cv.MORPH_OPEN, kernel)
         

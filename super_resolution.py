@@ -7,9 +7,9 @@ import numpy as np
 from image_sharpener import sharpen
 
 scale = 2
+frame_buffer = 10 - 1
 
 def super_resolution(filename, video_name, background_frames, foreground_frames, fg_masks):
-    frame_buffer = 10 - 1
 
     capture = cv.VideoCapture()
     capture.open(filename)
@@ -33,6 +33,12 @@ def super_resolution(filename, video_name, background_frames, foreground_frames,
     # sorted_bg_files = natsort.natsorted(bg_files)
     # sorted_fg_files = natsort.natsorted(fg_files)
     sorted_mask_files = natsort.natsorted(mask_files)
+
+    lr_images = None
+    fg_mask = None
+    reference = None
+    foreground = None
+    result = None
 
     for i in range(len(background_frames)-frame_buffer):
         print("Run: " + str(i))
@@ -80,7 +86,7 @@ def mean_fusion(reference, lr_images):
         sumMat = cv.add(sumMat, initialMat, mask=maskMat)
 
 
-    sumMat = cv.divide(sumMat, (10, 10, 10, 10))
+    sumMat = cv.divide(sumMat, (frame_buffer + 1, frame_buffer + 1, frame_buffer + 1, frame_buffer + 1))
 
     outputMat = sumMat.astype(np.uint8)
     return outputMat
