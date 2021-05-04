@@ -52,6 +52,7 @@ def super_resolution(filename, video_name, background_frames, foreground_frames,
         foreground = perform_interpolation(foreground, scale, cv.INTER_LINEAR)
         fg_mask = perform_interpolation(fg_mask, scale, cv.INTER_NEAREST)
         # fg_mask = cv.cvtColor(fg_mask, cv.COLOR_GRAY2RGB)
+        # foreground = sharpen(foreground)
 
         lr_images = []
 
