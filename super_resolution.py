@@ -114,11 +114,11 @@ def produce_mask(inputMat):
     return dstMask
 
 def combine_foreground(background, foreground, alpha):
-    foreground = foreground.astype(float) / 255.
-    background = background.astype(float) / 255.
+    foreground = np.float32(foreground) / 255.
+    background = np.float32(background) / 255.
 
 
-    alpha = alpha.astype(float)/255
+    alpha = np.float32(alpha) / 255.
 
     foreground = cv.multiply(alpha, foreground)
 
