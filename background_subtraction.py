@@ -65,6 +65,17 @@ def background_subtraction(filename, video_name):
     frame_fg_blur = None
     contours = None
     hierarchy = None
+    fgMask = None
+
+    video = cv.VideoCapture()
+    video.open(filename)
+    while True:
+        ret, frame = video.read()
+        if frame is None:
+            break
+        frame = np.float32(frame)
+        fgMask = backSub.apply(frame, fgMask, 0.02)
+
     
     while True:
         ret, frame = capture.read()
@@ -72,10 +83,9 @@ def background_subtraction(filename, video_name):
             break
         frame = np.float32(frame)
         bg_plate = np.float32(bg_plate)
-        fgMask=0.0
         # Get foreground Mask
-        fgMask = backSub.apply(frame, fgMask, 0.005)
-
+        fgMask = backSub.apply(frame, fgMask, 0.001)
+        cv.imshow("FG Mask", fgMask)
         #Apply Median Blur
         blur = cv.medianBlur(fgMask, 5)
  
