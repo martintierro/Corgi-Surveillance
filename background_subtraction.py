@@ -1,9 +1,9 @@
-from __future__ import print_function
-
 import cv2 as cv
 import numpy as np
 import argparse
 from matplotlib import pyplot as plt
+
+scale = 2
 
 def background_subtraction(filename, video_name):
     #contour threshold
@@ -16,11 +16,13 @@ def background_subtraction(filename, video_name):
     parser.add_argument('--algo', type=str, help='Background subtraction method (KNN, MOG2).', default='MOG2')
     args = parser.parse_args()
     
-    if args.algo == 'MOG2':
-        backSub = cv.createBackgroundSubtractorMOG2()
-    else:
-        backSub = cv.createBackgroundSubtractorKNN()
+    # if args.algo == 'MOG2':
+    #     backSub = cv.createBackgroundSubtractorMOG2()
+    # else:
+    #     backSub = cv.createBackgroundSubtractorKNN()
 
+    # backSub = cv.createBackgroundSubtractorMOG2()
+    backSub = cv.bgsegm.createBackgroundSubtractorGMG()
 
     capture = cv.VideoCapture()
     # capture.open("bike.mp4")
@@ -43,11 +45,8 @@ def background_subtraction(filename, video_name):
     out = cv.VideoWriter('BoundingBoxesVideo/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width,frame_height))
 
     bg_plate = cv.imread("Background/" + video_name + ".png")
+    bg_plate = perform_interpolation(bg_plate, scale, cv.INTER_CUBIC)
 
-    #Variable declarations
-    mb_backgrounds = []
-    mb_foregrounds = []
-    mb_fg_masks = []
     fgMask = None
     blur = None
     kernel = np.ones((3,3),np.uint8)
@@ -67,61 +66,51 @@ def background_subtraction(filename, video_name):
     hierarchy = None
     fgMask = None
 
-    video = cv.VideoCapture()
-    video.open(filename)
-    while True:
-        ret, frame = video.read()
-        if frame is None:
-            break
-        frame = np.float32(frame)
-        fgMask = backSub.apply(frame, fgMask, 0.02)
+    frame_count = int(capture.get(cv.CAP_PROP_FRAME_COUNT)) 
+    if frame_count < 120:
+        train(filename, backSub)
+        train(filename, backSub)
+    else:
+        train(filename, backSub)
 
     
     while True:
         ret, frame = capture.read()
         if frame is None:
             break
+        frame_bw = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
         frame = np.float32(frame)
         bg_plate = np.float32(bg_plate)
+    
         # Get foreground Mask
-        fgMask = backSub.apply(frame, fgMask, 0.001)
-        cv.imshow("FG Mask", fgMask)
+
+        
+        fgMask = backSub.apply(frame_bw, fgMask, 0.001)
+        # cv.imshow("FG Mask", fgMask)
         #Apply Median Blur
+
+        fgMask = perform_interpolation_mask(fgMask, frame, scale, cv.INTER_NEAREST)
+
+        frame_linear = perform_interpolation(frame, scale, cv.INTER_LINEAR)
+        frame_cubic = perform_interpolation(frame, scale, cv.INTER_CUBIC)
         blur = cv.medianBlur(fgMask, 5)
  
         # blur = cv.morphologyEx(blur,cv.MORPH_CLOSE, kernel)
-        blur = cv.morphologyEx(blur,cv.MORPH_OPEN, kernel)
+        # blur = cv.morphologyEx(blur,cv.MORPH_OPEN, kernel)
         
         # Save Frame
-        frame = frame.astype(np.uint8)
-        cv.imwrite('Frames/'+video_name+'/Frame '+str(i)+'.jpg',frame)
-        frame = np.float32(frame)
+        # frame_linear = frame_linear.astype(np.uint8)
+        # cv.imwrite('Frames/'+video_name+'/Frame '+str(i)+'.png',frame_linear)
+        # frame_linear = np.float32(frame_linear)
         
 
-        #Subtracts the mask overlap region from the image overlap region, puts it in image_sub
-        colored_mask = cv.bitwise_and(frame,frame,mask = fgMask)
-        colored_mask_blur = cv.bitwise_and(frame,frame,mask = blur)
-        colored_bg_mask = cv.bitwise_and(bg_plate, bg_plate, mask = fgMask)
-        colored_bg_mask_blur = cv.bitwise_and(bg_plate, bg_plate, mask = blur)
-
-        colored_mask = np.float32(colored_mask)
-        colored_mask_blur = np.float32(colored_mask_blur)
-        colored_bg_mask = np.float32(colored_bg_mask)
-        colored_bg_mask_blur = np.float32(colored_bg_mask_blur)
+        frame_fg, frame_bg = perform_subtraction(frame_linear, bg_plate, fgMask)
+        frame_fg_blur, frame_bg_blur = perform_subtraction(frame_linear, bg_plate, blur)
+        frame_fg_cubic, frame_bg_cubic = perform_subtraction(frame_cubic, bg_plate, blur)
 
 
 
-        frame_bg = frame-colored_mask
-        frame_bg_blur = frame-colored_mask_blur
-        
-        frame_bg_plate = bg_plate - (bg_plate - colored_bg_mask)
-        frame_bg_plate_blur = bg_plate - (bg_plate - colored_bg_mask_blur)
 
-        frame_fg = frame - frame_bg
-        frame_fg_blur = frame - frame_bg_blur
-
-        frame_bg = cv.add(frame_bg, frame_bg_plate)
-        frame_bg_blur = cv.add(frame_bg_blur, frame_bg_plate_blur)
         # Shows diff only:
         # cv.imshow('image_background', frame_bg)
         # cv.imshow('image_foreground', frame_fg)
@@ -132,29 +121,33 @@ def background_subtraction(filename, video_name):
             area = cv.contourArea(cnt)         
             if area > threshold_area:
                 x,y,w,h = cv.boundingRect(cnt)
-                frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-        frame = frame.astype(np.uint8)
-        out.write(frame)
+                frame_box = cv.rectangle(frame_linear,(x,y),(x+w,y+h),(0,255,0),2)
+        frame_linear = frame_linear.astype(np.uint8)
+        out.write(frame_linear)
         
         fgMask = fgMask.astype(np.uint8)
         blur = blur.astype(np.uint8)
         frame_bg = frame_bg.astype(np.uint8)
         frame_bg_blur = frame_bg_blur.astype(np.uint8)
+        frame_bg_cubic = frame_bg_cubic.astype(np.uint8)
         frame_fg = frame_fg.astype(np.uint8)
         frame_fg_blur = frame_fg_blur.astype(np.uint8)
+        frame_fg_cubic = frame_fg_cubic.astype(np.uint8)
 
-        mb_backgrounds.append(frame_bg_blur)
-        mb_foregrounds.append(frame_fg_blur)
-        mb_fg_masks.append(fgMask)
+
 
         #Exports Frames
-        cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.jpg',frame)
-        cv.imwrite('Mask/Raw BG/'+video_name+'/BG Mask '+str(i)+'.jpg',fgMask)
-        cv.imwrite('Mask/Median Blur/'+video_name+'/BG Mask '+str(i)+'.jpg',blur)
-        cv.imwrite('Background/Raw BG/'+video_name+'/Background '+str(i)+'.jpg',frame_bg)
-        cv.imwrite('Background/Median Blur/'+video_name+'/Background '+str(i)+'.jpg',frame_bg_blur)
-        cv.imwrite('Foreground/Raw BG/'+video_name+'/Foreground '+str(i)+'.jpg',frame_fg)
-        cv.imwrite('Foreground/Median Blur/'+video_name+'/Foreground '+str(i)+'.jpg',frame_fg_blur)
+        # cv.imwrite('Mask/Raw BG/'+video_name+'/BG Mask '+str(i)+'.png',fgMask)
+        # cv.imwrite('Background/Raw BG/'+video_name+'/Background '+str(i)+'.png',frame_bg)
+        # cv.imwrite('Foreground/Raw BG/'+video_name+'/Foreground '+str(i)+'.png',frame_fg)
+
+
+        cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.png',frame_linear)
+        cv.imwrite('Foreground/'+video_name+'/Foreground '+str(i)+'.png',frame_fg_blur)
+        cv.imwrite('Mask/'+video_name+'/BG Mask '+str(i)+'.png',blur)
+        cv.imwrite('Background/Linear Interpolation/'+video_name+'/Background '+str(i)+'.png',frame_bg_blur)
+        cv.imwrite('Background/Cubic Interpolation/'+video_name+'/Background '+str(i)+'.png',frame_bg_cubic)
+
 
         i=i+1   
 
@@ -166,8 +159,57 @@ def background_subtraction(filename, video_name):
     capture.release()
     out.release()
 
-    return mb_backgrounds, mb_foregrounds, mb_fg_masks
-
-    
     # Closes all the frames
     cv.destroyAllWindows() 
+
+
+def train(filename, backSub):
+    video = cv.VideoCapture()
+    video.open(filename)
+    fgMask = None
+    while True:
+        ret, frame = video.read()
+        if frame is None:
+            break
+        # frame = np.float32(frame)
+        frame = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
+        fgMask = backSub.apply(frame, fgMask, 0.4)
+
+def perform_subtraction(frame, bg_plate, fgMask):
+    colored_mask = cv.bitwise_and(frame,frame,mask = fgMask)
+    colored_bg_mask = cv.bitwise_and(bg_plate, bg_plate, mask = fgMask)
+    
+    colored_mask = np.float32(colored_mask)
+    colored_bg_mask = np.float32(colored_bg_mask)
+
+    frame_bg = frame - colored_mask
+    frame_bg_plate = bg_plate - (bg_plate - colored_bg_mask)
+
+    frame_fg = frame - frame_bg
+
+    frame_bg = cv.add(frame_bg, frame_bg_plate)
+
+
+    return frame_fg, frame_bg
+
+def perform_interpolation(fromMat, scale, interpolationType):
+    newRows = round(np.shape(fromMat)[1] * scale)
+    newCols = round(np.shape(fromMat)[0] * scale)
+
+    shape = [newRows, newCols]
+    hrMat = np.zeros(shape, dtype=fromMat.dtype)
+
+    hrMat = cv.resize(fromMat, (newRows, newCols), scale, scale, interpolationType)
+
+    return hrMat
+
+def perform_interpolation_mask(mask, fromMat, scale, interpolationType):
+    newRows = round(np.shape(fromMat)[1] * scale)
+    newCols = round(np.shape(fromMat)[0] * scale)
+
+    shape = [newRows, newCols]
+    hrMat = np.zeros(shape, dtype=mask.dtype)
+
+    hrMat = cv.resize(mask, (newRows, newCols), scale, scale, interpolationType)
+
+    return hrMat

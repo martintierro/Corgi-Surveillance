@@ -6,41 +6,27 @@ from super_resolution import super_resolution
 from background_detection import background_detection
 
 def init_folders(video_name):
-    if not os.path.exists("Frames"):
-        os.makedirs("Frames")
-
-    if not os.path.exists("Frames/" + video_name):
-        os.makedirs("Frames/" + video_name)
 
     if not os.path.exists("Background"):
         os.makedirs("Background")
 
-    if not os.path.exists("Background/Raw BG"):
-        os.makedirs("Background/Raw BG")
+    if not os.path.exists("Background/Linear Interpolation"):
+        os.makedirs("Background/Linear Interpolation")
 
-    if not os.path.exists("Background/Median Blur"):
-        os.makedirs("Background/Median Blur")
+    if not os.path.exists("Background/Linear Interpolation/" + video_name):
+        os.makedirs("Background/Linear Interpolation/" + video_name)
+    
+    if not os.path.exists("Background/Cubic Interpolation"):
+        os.makedirs("Background/Cubic Interpolation")
 
-    if not os.path.exists("Background/Raw BG/" + video_name):
-        os.makedirs("Background/Raw BG/" + video_name)
-
-    if not os.path.exists("Background/Median Blur/" + video_name):
-        os.makedirs("Background/Median Blur/" + video_name)
+    if not os.path.exists("Background/Cubic Interpolation/" + video_name):
+        os.makedirs("Background/Cubic Interpolation/" + video_name)
 
     if not os.path.exists("Foreground"):
         os.makedirs("Foreground")
 
-    if not os.path.exists("Foreground/Raw BG"):
-        os.makedirs("Foreground/Raw BG")
-
-    if not os.path.exists("Foreground/Median Blur"):
-        os.makedirs("Foreground/Median Blur")
-
-    if not os.path.exists("Foreground/Raw BG/" + video_name):
-        os.makedirs("Foreground/Raw BG/" + video_name)
-
-    if not os.path.exists("Foreground/Median Blur/" + video_name):
-        os.makedirs("Foreground/Median Blur/" + video_name)
+    if not os.path.exists("Foreground/" + video_name):
+        os.makedirs("Foreground/" + video_name)
 
     if not os.path.exists("BoundingBoxesVideo"):
         os.makedirs("BoundingBoxesVideo")
@@ -54,17 +40,8 @@ def init_folders(video_name):
     if not os.path.exists("Mask"):
         os.makedirs("Mask")
 
-    if not os.path.exists("Mask/Raw BG"):
-        os.makedirs("Mask/Raw BG")
-
-    if not os.path.exists("Mask/Median Blur"):
-        os.makedirs("Mask/Median Blur")
-
-    if not os.path.exists("Mask/Raw BG/" + video_name):
-        os.makedirs("Mask/Raw BG/" + video_name)
-
-    if not os.path.exists("Mask/Median Blur/" + video_name):
-        os.makedirs("Mask/Median Blur/" + video_name)
+    if not os.path.exists("Mask/" + video_name):
+        os.makedirs("Mask/" + video_name)
     
     if not os.path.exists("Super Resolution"):
         os.makedirs("Super Resolution")
@@ -84,8 +61,8 @@ def main():
 
     init_folders(video_name)
     background_detection(filename, video_name)
-    background_frames, foreground_frames, fg_masks = background_subtraction(filename, video_name)
-    super_resolution(filename, video_name, background_frames, foreground_frames, fg_masks)
+    background_subtraction(filename, video_name)
+    super_resolution(filename, video_name)
 
 if __name__ == "__main__":
     main()

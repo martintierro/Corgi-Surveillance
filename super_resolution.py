@@ -9,7 +9,7 @@ from image_sharpener import sharpen
 scale = 2
 frame_buffer = 10 - 1
 
-def super_resolution(filename, video_name, background_frames, foreground_frames, fg_masks):
+def super_resolution(filename, video_name):
 
     capture = cv.VideoCapture()
     capture.open(filename)
@@ -22,16 +22,19 @@ def super_resolution(filename, video_name, background_frames, foreground_frames,
 
     capture.release()
     
-    # bg_path = "Background/Median Blur/" + video_name +"/"
-    # fg_path = "Foreground/Median Blur/" + video_name +"/"
-    mask_path = "Mask/Median Blur/" + video_name +"/"
+    bg_linear_path = "Background/Linear Interpolation/" + video_name +"/"
+    bg_cubic_path = "Background/Cubic Interpolation/" + video_name +"/"
+    fg_path = "Foreground/" + video_name +"/"
+    mask_path = "Mask/" + video_name +"/"
     
-    # bg_files = [f for f in listdir(bg_path) if isfile(join(bg_path, f))]
-    # fg_files = [f for f in listdir(fg_path) if isfile(join(fg_path, f))]
+    bg_linear_files = [f for f in listdir(bg_linear_path) if isfile(join(bg_linear_path, f))]
+    bg_cubic_files = [f for f in listdir(bg_cubic_path) if isfile(join(bg_cubic_path, f))]
+    fg_files = [f for f in listdir(fg_path) if isfile(join(fg_path, f))]
     mask_files = [f for f in listdir(mask_path) if isfile(join(mask_path, f))]
 
-    # sorted_bg_files = natsort.natsorted(bg_files)
-    # sorted_fg_files = natsort.natsorted(fg_files)
+    sorted_bg_linear_files = natsort.natsorted(bg_linear_files)
+    sorted_bg_cubic_files = natsort.natsorted(bg_cubic_files)
+    sorted_fg_files = natsort.natsorted(fg_files)
     sorted_mask_files = natsort.natsorted(mask_files)
 
     lr_images = None
@@ -40,33 +43,23 @@ def super_resolution(filename, video_name, background_frames, foreground_frames,
     foreground = None
     result = None
 
-    for i in range(len(background_frames)-frame_buffer):
-        print("Run: " + str(i))
+    for i in range(len(sorted_bg_linear_files)-frame_buffer):
+        print("Frame Number: " + str(i))
         # print("Reference: " + background_frames[i])
-        # reference = cv.imread(bg_path + sorted_bg_files[i])
-        # foreground = cv.imread(fg_path + sorted_fg_files[i + frame_buffer])
+        reference = cv.imread(bg_linear_path + sorted_bg_linear_files[i])
+        foreground = cv.imread(fg_path + sorted_fg_files[i + frame_buffer])
         fg_mask = cv.imread(mask_path + sorted_mask_files[i + frame_buffer])
-        reference = background_frames[i]
-        foreground = foreground_frames[i + frame_buffer]
-        # fg_mask = fg_masks[i+frame_buffer]
-        foreground = perform_interpolation(foreground, scale, cv.INTER_LINEAR)
-        fg_mask = perform_interpolation(fg_mask, scale, cv.INTER_NEAREST)
-        # fg_mask = cv.cvtColor(fg_mask, cv.COLOR_GRAY2RGB)
-        # foreground = sharpen(foreground)
 
         lr_images = []
 
         for j in range(frame_buffer):
-            # lr_images.append(cv.imread(bg_path + sorted_bg_files[i+j+1]))
-            lr_image = background_frames[i+j+1]
+            lr_image = cv.imread(bg_cubic_path + sorted_bg_cubic_files[i])
             # lr_image = sharpen(lr_image)
             lr_images.append(lr_image)
 
         result = mean_fusion(reference, lr_images)
         
         result = combine_foreground(result, foreground, fg_mask)
-
-        # result = cv.add(result, foreground)
 
         result = result.astype(np.uint8)
 
@@ -77,11 +70,11 @@ def super_resolution(filename, video_name, background_frames, foreground_frames,
 
 def mean_fusion(reference, lr_images):
     initialMat = reference
-    sumMat = perform_interpolation(initialMat, scale, cv.INTER_LINEAR)
+    sumMat = np.zeros(initialMat.shape)
+    np.copyto(sumMat, initialMat)
     sumMat = np.float32(sumMat)
 
     for initialMat in lr_images:
-        initialMat = perform_interpolation(initialMat, scale, cv.INTER_CUBIC)
         initialMat= np.float32(initialMat)
         maskMat = produce_mask(initialMat)
         sumMat = cv.add(sumMat, initialMat, mask=maskMat)
@@ -92,16 +85,6 @@ def mean_fusion(reference, lr_images):
     outputMat = sumMat.astype(np.uint8)
     return outputMat
 
-def perform_interpolation(fromMat, scale, interpolationType):
-    newRows = round(np.shape(fromMat)[1] * scale)
-    newCols = round(np.shape(fromMat)[0] * scale)
-
-    shape = [newRows, newCols]
-    hrMat = np.zeros(shape, dtype=fromMat.dtype)
-
-    hrMat = cv.resize(fromMat, (newRows, newCols), scale, scale, interpolationType)
-
-    return hrMat
 
 def produce_mask(inputMat):
     dstMask = np.empty(inputMat.shape)
@@ -116,7 +99,6 @@ def produce_mask(inputMat):
 def combine_foreground(background, foreground, alpha):
     foreground = np.float32(foreground) / 255.
     background = np.float32(background) / 255.
-
 
     alpha = np.float32(alpha) / 255.
 
