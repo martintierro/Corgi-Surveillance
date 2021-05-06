@@ -22,18 +22,18 @@ def super_resolution(filename, video_name):
 
     capture.release()
     
-    bg_linear_path = "Background/Linear Interpolation/" + video_name +"/"
-    bg_cubic_path = "Background/Cubic Interpolation/" + video_name +"/"
+    bg_path = "Background/" + video_name +"/"
+    # bg_cubic_path = "Background/Cubic Interpolation/" + video_name +"/"
     fg_path = "Foreground/" + video_name +"/"
     mask_path = "Mask/" + video_name +"/"
     
-    bg_linear_files = [f for f in listdir(bg_linear_path) if isfile(join(bg_linear_path, f))]
-    bg_cubic_files = [f for f in listdir(bg_cubic_path) if isfile(join(bg_cubic_path, f))]
+    bg_files = [f for f in listdir(bg_path) if isfile(join(bg_path, f))]
+    # bg_cubic_files = [f for f in listdir(bg_cubic_path) if isfile(join(bg_cubic_path, f))]
     fg_files = [f for f in listdir(fg_path) if isfile(join(fg_path, f))]
     mask_files = [f for f in listdir(mask_path) if isfile(join(mask_path, f))]
 
-    sorted_bg_linear_files = natsort.natsorted(bg_linear_files)
-    sorted_bg_cubic_files = natsort.natsorted(bg_cubic_files)
+    sorted_bg_files = natsort.natsorted(bg_files)
+    # sorted_bg_cubic_files = natsort.natsorted(bg_cubic_files)
     sorted_fg_files = natsort.natsorted(fg_files)
     sorted_mask_files = natsort.natsorted(mask_files)
 
@@ -43,23 +43,25 @@ def super_resolution(filename, video_name):
     foreground = None
     result = None
 
-    for i in range(len(sorted_bg_linear_files)-frame_buffer):
+    for i in range(len(sorted_bg_files)-frame_buffer):
         print("Frame Number: " + str(i))
         # print("Reference: " + background_frames[i])
-        reference = cv.imread(bg_linear_path + sorted_bg_linear_files[i])
+        reference = cv.imread(bg_path + sorted_bg_files[i])
         foreground = cv.imread(fg_path + sorted_fg_files[i + frame_buffer])
         fg_mask = cv.imread(mask_path + sorted_mask_files[i + frame_buffer])
 
         lr_images = []
 
         for j in range(frame_buffer):
-            lr_image = cv.imread(bg_cubic_path + sorted_bg_cubic_files[i+j+1])
+            lr_image = cv.imread(bg_path + sorted_bg_files[i+j+1])
             # lr_image = sharpen(lr_image)
             lr_images.append(lr_image)
 
         result = mean_fusion(reference, lr_images)
         
         result = combine_foreground(result, foreground, fg_mask)
+
+        # result = cv.detailEnhance(result, sigma_s=1, sigma_r=0.05)
 
         result = result.astype(np.uint8)
 
