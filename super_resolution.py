@@ -44,7 +44,7 @@ def super_resolution(filename, video_name):
     result = None
 
     for i in range(len(sorted_bg_files)-frame_buffer):
-        print("Frame Number: " + str(i))
+        print("Super Resolution Frame Number: " + str(i))
         # print("Reference: " + background_frames[i])
         reference = cv.imread(bg_path + sorted_bg_files[i])
         foreground = cv.imread(fg_path + sorted_fg_files[i + frame_buffer])

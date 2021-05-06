@@ -85,6 +85,7 @@ def background_subtraction(filename, video_name):
         ret, frame = capture.read()
         if frame is None:
             break
+        print("BG Subtraction Frame Number: " + str(i))
         frame_bw = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
         frame = np.float32(frame)
         frame_bw = np.float32(frame_bw)
