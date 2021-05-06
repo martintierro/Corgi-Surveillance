@@ -53,7 +53,7 @@ def super_resolution(filename, video_name):
         lr_images = []
 
         for j in range(frame_buffer):
-            lr_image = cv.imread(bg_cubic_path + sorted_bg_cubic_files[i])
+            lr_image = cv.imread(bg_cubic_path + sorted_bg_cubic_files[i+j+1])
             # lr_image = sharpen(lr_image)
             lr_images.append(lr_image)
 
