@@ -48,7 +48,7 @@ def background_subtraction(filename, video_name):
     print(fps)
 
     #Save Video
-    out = cv.VideoWriter('BoundingBoxesVideo/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width,frame_height))
+    out = cv.VideoWriter('BoundingBoxesVideo/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width * scale,frame_height * scale))
 
     bg_plate = cv.imread("Background/" + video_name + ".png")
     # bg_plate = perform_interpolation(bg_plate, scale, cv.INTER_CUBIC)
@@ -86,6 +86,7 @@ def background_subtraction(filename, video_name):
         if frame is None:
             break
         print("BG Subtraction Frame Number: " + str(i))
+        # frame_bw = cv.detailEnhance(frame, sigma_s=10, sigma_r=0.15)
         frame_bw = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
         frame = np.float32(frame)
         frame_bw = np.float32(frame_bw)
@@ -152,10 +153,10 @@ def background_subtraction(filename, video_name):
         # cv.imwrite('Foreground/Raw BG/'+video_name+'/Foreground '+str(i)+'.png',frame_fg)
 
 
-        cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.png',frame)
-        cv.imwrite('Foreground/'+video_name+'/Foreground '+str(i)+'.png',frame_fg_blur)
-        cv.imwrite('Mask/'+video_name+'/BG Mask '+str(i)+'.png',blur)
-        cv.imwrite('Background/'+video_name+'/Background '+str(i)+'.png',frame_bg_blur)
+        cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.png',frame, [cv.IMWRITE_PNG_COMPRESSION, 0])
+        cv.imwrite('Foreground/'+video_name+'/Foreground '+str(i)+'.png',frame_fg_blur, [cv.IMWRITE_PNG_COMPRESSION, 0])
+        cv.imwrite('Mask/'+video_name+'/BG Mask '+str(i)+'.png',blur, [cv.IMWRITE_PNG_COMPRESSION, 0])
+        cv.imwrite('Background/'+video_name+'/Background '+str(i)+'.png',frame_bg_blur, [cv.IMWRITE_PNG_COMPRESSION, 0])
         # cv.imwrite('Background/Cubic Interpolation/'+video_name+'/Background '+str(i)+'.png',frame_bg_cubic)
 
 
@@ -182,6 +183,7 @@ def train(filename, backSub):
         if frame is None:
             break
         # frame = sr.upsample(frame)
+        # frame = cv.detailEnhance(frame, sigma_s=10, sigma_r=0.15)
         frame = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
         # frame = np.float32(frame)
         fgMask = backSub.apply(frame, fgMask, 0.5)

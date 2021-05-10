@@ -51,6 +51,9 @@ def init_folders(video_name):
 
     if not os.path.exists("Super Resolution/" + video_name):
         os.makedirs("Super Resolution/" + video_name)
+    
+    if not os.path.exists("Temp"):
+        os.makedirs("Temp")
 
 def main():
     #Open Video Feed

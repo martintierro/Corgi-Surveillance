@@ -19,5 +19,5 @@ def background_detection(filename, video_name):
 
     #calculate the average
     backgroundFrame = np.median(frames, axis=0).astype(dtype=np.uint8)    
-    cv.imwrite("Background/"+video_name+".png",backgroundFrame)
+    cv.imwrite("Background/"+video_name+".png",backgroundFrame, [cv.IMWRITE_PNG_COMPRESSION, 0])
     # cv.imshow("Background Frame",backgroundFrame)

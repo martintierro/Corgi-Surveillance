@@ -5,6 +5,7 @@ from os.path import isfile, join
 import cv2 as cv
 import numpy as np
 from image_sharpener import sharpen
+from lr_warping import lr_warping
 
 scale = 2
 frame_buffer = 10 - 1
@@ -57,6 +58,14 @@ def super_resolution(filename, video_name):
             # lr_image = sharpen(lr_image)
             lr_images.append(lr_image)
 
+        # lr_warping(reference, lr_images, video_name)
+        # lr_images = []
+
+        # for j in range(frame_buffer):
+        #     lr_image = cv.imread("Temp/" + video_name + "_warped_" + str(j) + ".png")
+        #     lr_images.append(lr_image)
+
+
         result = mean_fusion(reference, lr_images)
         
         result = combine_foreground(result, foreground, fg_mask)
@@ -65,7 +74,7 @@ def super_resolution(filename, video_name):
 
         result = result.astype(np.uint8)
 
-        cv.imwrite("Super Resolution/" + video_name + "/sr_" + str(i) + ".png", result)
+        cv.imwrite("Super Resolution/" + video_name + "/sr_" + str(i) + ".png", result, [cv.IMWRITE_PNG_COMPRESSION, 0])
         out.write(result)
     
     out.release()
