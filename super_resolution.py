@@ -74,7 +74,7 @@ def super_resolution(filename, video_name):
 
         result = result.astype(np.uint8)
 
-        cv.imwrite("Super Resolution/" + video_name + "/sr_" + str(i) + ".png", result, [cv.IMWRITE_PNG_COMPRESSION, 0])
+        cv.imwrite("Super Resolution/" + video_name + "/sr_" + str(i) + ".png", result)
         out.write(result)
     
     out.release()

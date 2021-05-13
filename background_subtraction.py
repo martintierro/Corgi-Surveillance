@@ -153,10 +153,10 @@ def background_subtraction(filename, video_name):
         # cv.imwrite('Foreground/Raw BG/'+video_name+'/Foreground '+str(i)+'.png',frame_fg)
 
 
-        cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.png',frame, [cv.IMWRITE_PNG_COMPRESSION, 0])
-        cv.imwrite('Foreground/'+video_name+'/Foreground '+str(i)+'.png',frame_fg_blur, [cv.IMWRITE_PNG_COMPRESSION, 0])
-        cv.imwrite('Mask/'+video_name+'/BG Mask '+str(i)+'.png',blur, [cv.IMWRITE_PNG_COMPRESSION, 0])
-        cv.imwrite('Background/'+video_name+'/Background '+str(i)+'.png',frame_bg_blur, [cv.IMWRITE_PNG_COMPRESSION, 0])
+        cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.png',frame)
+        cv.imwrite('Foreground/'+video_name+'/Foreground '+str(i)+'.png',frame_fg_blur)
+        cv.imwrite('Mask/'+video_name+'/BG Mask '+str(i)+'.png',blur)
+        cv.imwrite('Background/'+video_name+'/Background '+str(i)+'.png',frame_bg_blur)
         # cv.imwrite('Background/Cubic Interpolation/'+video_name+'/Background '+str(i)+'.png',frame_bg_cubic)
 
 
