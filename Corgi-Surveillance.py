@@ -13,26 +13,11 @@ def init_folders(video_name):
     if not os.path.exists("Background/" + video_name):
         os.makedirs("Background/" + video_name)
 
-    # if not os.path.exists("Background/Linear Interpolation"):
-    #     os.makedirs("Background/Linear Interpolation")
-
-    # if not os.path.exists("Background/Linear Interpolation/" + video_name):
-    #     os.makedirs("Background/Linear Interpolation/" + video_name)
-    
-    # if not os.path.exists("Background/Cubic Interpolation"):
-    #     os.makedirs("Background/Cubic Interpolation")
-
-    # if not os.path.exists("Background/Cubic Interpolation/" + video_name):
-    #     os.makedirs("Background/Cubic Interpolation/" + video_name)
-
     if not os.path.exists("Foreground"):
         os.makedirs("Foreground")
 
     if not os.path.exists("Foreground/" + video_name):
         os.makedirs("Foreground/" + video_name)
-
-    if not os.path.exists("BoundingBoxesVideo"):
-        os.makedirs("BoundingBoxesVideo")
 
     if not os.path.exists("BoundingBox"):
         os.makedirs("BoundingBox")
