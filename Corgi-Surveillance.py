@@ -1,4 +1,7 @@
 import os
+import time
+import csv
+from datetime import datetime
 from tkinter import Tk # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 from background_subtraction import background_subtraction
@@ -41,6 +44,10 @@ def init_folders(video_name):
         os.makedirs("Temp")
 
 def main():
+    start = time.time()
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    
     #Open Video Feed
     Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
     filename = askopenfilename() # show an "Open" dialog box and return the path to the selected file
@@ -54,6 +61,12 @@ def main():
     background_detection(filename, video_name)
     background_subtraction(filename, video_name)
     super_resolution(filename, video_name)
+    end = time.time()
+    
+    with open("Processing Time.csv", mode='a', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file, delimiter = ',', quotechar = '"', quoting=csv.QUOTE_MINIMAL)
+        csv_writer.writerow([video_name, end-start, dt_string])
+    print(video_name +": " + str(end - start) + " seconds")
 
 if __name__ == "__main__":
     main()

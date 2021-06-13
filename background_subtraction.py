@@ -99,7 +99,7 @@ def background_subtraction(filename, video_name):
         fgMask = backSub.apply(frame_bw, fgMask, 0.0005)
         #Apply Median Blur
         fgMask = perform_interpolation_mask(fgMask, frame, scale, cv.INTER_NEAREST)
-        cv.imshow("FG Mask", fgMask)
+        # cv.imshow("FG Mask", fgMask)
         vid_mask = cv.cvtColor(fgMask, cv.COLOR_GRAY2RGB)
         mask_out.write(vid_mask)
         
@@ -139,7 +139,7 @@ def background_subtraction(filename, video_name):
         frame = frame.astype(np.uint8)
         box_out.write(frame)
 
-        cv.imshow("Bounding Box", frame)
+        # cv.imshow("Bounding Box", frame)
         
         fgMask = fgMask.astype(np.uint8)
         blur = blur.astype(np.uint8)
