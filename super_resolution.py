@@ -18,6 +18,7 @@ def super_resolution(filename, video_name):
     frame_width = int(capture.get(3))
     frame_height = int(capture.get(4))
     fps = capture.get(cv.CAP_PROP_FPS)
+    frame_count = int(capture.get(cv.CAP_PROP_FRAME_COUNT)) 
 
     out = cv.VideoWriter('Super Resolution/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width * scale,frame_height * scale))
 
@@ -45,7 +46,7 @@ def super_resolution(filename, video_name):
     result = None
 
     for i in range(len(sorted_bg_files)-frame_buffer):
-        print("Super Resolution Frame Number: " + str(i))
+        print("Super Resolution Frame Number: " + str(i) + "/" + str(frame_count-10))
         # print("Reference: " + background_frames[i])
         reference = cv.imread(bg_path + sorted_bg_files[i])
         foreground = cv.imread(fg_path + sorted_fg_files[i + frame_buffer])

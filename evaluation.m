@@ -2,8 +2,8 @@ clc
 clear
 %% evaluation on Test Set
 addpath('metrics')
-%video_name = {'[01] KITTI - City LR_x2','[02] KITTI - Person LR_x2','[03] KITTI - Campus LR_x2','[04] VIRAT Court LR_x2','[05] VIRAT Student Campus LR_x2','[06] VIRAT Full Parking Lot LR_x2','[07] Wide Area LR_x2','[08] Human Interaction LR_x2','[09] Edinburgh Office LR_x2','[10] MMDA Day LR_x2','[11] Archer_s Eye LR_x2','[12] Pasay Bike Incident LR_x2','[13] Bus LR_x2','[14] Convenience Store LR_x2','[15] Retail Store LR_x2','[16] Grocery Theft LR_x2','[17] Abbey Road LR_x2','[18] Wolves Highway LR_x2','[19] Restaurant LR_x2','[20] Halloween LR_x2'};
-video_name = {'[01] KITTI - City LR_x2','[02] KITTI - Person LR_x2','[03] KITTI - Campus LR_x2','[08] Human Interaction LR_x2', '[14] Convenience Store LR_x2'}
+video_name = {'[01] KITTI - City LR_x2','[02] KITTI - Person LR_x2','[03] KITTI - Campus LR_x2','[04] VIRAT Court LR_x2','[05] VIRAT Student Campus LR_x2','[06] VIRAT Full Parking Lot LR_x2','[07] Wide Area LR_x2','[08] Human Interaction LR_x2','[09] Edinburgh Office LR_x2','[10] MMDA Day LR_x2','[11] Archer_s Eye LR_x2','[12] Pasay Bike Incident LR_x2','[13] Bus LR_x2','[14] Convenience Store LR_x2','[15] Retail Store LR_x2','[16] Grocery Theft LR_x2','[17] Abbey Road LR_x2','[18] Wolves Highway LR_x2','[19] Restaurant LR_x2','[20] Halloween LR_x2'};
+%video_name = {'[01] KITTI - City LR_x2','[02] KITTI - Person LR_x2','[03] KITTI - Campus LR_x2','[08] Human Interaction LR_x2', '[14] Convenience Store LR_x2'}
 %video_name = {'[17] Abbey Road LR_x2'};
 psnr_set = [];
 ssim_set = [];
@@ -19,7 +19,7 @@ for idx_video = 1:length(video_name)
     n=numel(a)-1
     disp(n)
     for idx_frame = 9:n 				% exclude the first and last 2 frames
-        img_hr = imread(['E:/Projects/Thesis/Baseline B/SOF-VSR/TIP/data/test/Set/',video_name{idx_video},'/hr/hr_', num2str(idx_frame,'%d'),'.png']);
+        img_hr = imread(['E:/Projects/Thesis/Frames/',video_name{idx_video},'/hr/hr_', num2str(idx_frame,'%d'),'.png']);
         img_sr = imread(['Super Resolution/',video_name{idx_video},'/sr_', num2str(idx_frame-9,'%d'),'.png']);
         
         h = min(size(img_hr, 1), size(img_sr, 1));
