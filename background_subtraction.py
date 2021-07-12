@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
 import argparse
+from numpy import uint
+from numpy import uint8
 import scipy
 from scipy import *
 from scipy.sparse import linalg
@@ -80,12 +82,13 @@ def background_subtraction(filename, video_name):
     fgMask = None
 
     frame_count = int(capture.get(cv.CAP_PROP_FRAME_COUNT))
-    backSub = cv.bgsegm.createBackgroundSubtractorGSOC() 
-    # if frame_count < 120:
-    #     train(filename, backSub)
-    #     train(filename, backSub)
-    # else:
-    train(filename, backSub)
+    backSub = cv.bgsegm.createBackgroundSubtractorGMG() 
+    # backSub = cv.createBackgroundSubtractorMOG2()
+    if frame_count < 120:
+        train(filename, backSub)
+        train(filename, backSub)
+    else:
+        train(filename, backSub)
     # train(filename, backSub)
     # train(filename, backSub)
     # train(filename, backSub)
@@ -99,10 +102,10 @@ def background_subtraction(filename, video_name):
             break
         print("BG Subtraction Frame Number: " + str(counter) + "/" + str(frame_count))
         frame_bw = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
-        fgMask = backSub.apply(frame)
         frame = np.float32(frame)
         frame_bw = np.float32(frame_bw)
         bg_plate = np.float32(bg_plate)
+        fgMask = backSub.apply(frame)
     
         # Get foreground Mask
         
@@ -117,8 +120,8 @@ def background_subtraction(filename, video_name):
         vid_mask = cv.cvtColor(fgMask.astype(np.uint8), cv.COLOR_GRAY2RGB)
         mask_out.write(vid_mask)
        
-        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
-        fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
+        fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
+        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
         # fgMask = cv.medianBlur(fgMask, 5)
         cv.imshow("Mask", fgMask)
 
@@ -172,6 +175,38 @@ def background_subtraction(filename, video_name):
     # Closes all the frames
     cv.destroyAllWindows() 
 
+def get_mask(img):
+    gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+    blurred = cv.GaussianBlur(img, (9, 9), 0)
+
+    # Edge detection 
+    edges = cv.Canny(gray, 100, 200)
+    edges = cv.dilate(edges, None)
+    edges = cv.erode(edges, None)
+
+    # Find contours in edges, sort by area 
+    contour_info = []
+    contours, _ = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+    for c in contours:
+        contour_info.append((
+            c,
+            cv.isContourConvex(c),
+            cv.contourArea(c),
+        ))
+    contour_info = sorted(contour_info, key=lambda c: c[2], reverse=True)
+    max_contour = contour_info[0]
+
+    # Create empty mask and flood fill
+    mask = np.zeros(edges.shape)
+    for c in contour_info:
+        cv.fillConvexPoly(mask, c[0], (255))
+
+    # Smooth mask and blur it
+    # mask = cv.dilate(mask, None, iterations=10)
+    # mask = cv.erode(mask, None, iterations=10)
+    # mask = cv.GaussianBlur(mask, (21, 21), 0)
+
+    return mask
 
 def train(filename, backSub):
     video = cv.VideoCapture()
@@ -188,6 +223,7 @@ def train(filename, backSub):
         fgMask = backSub.apply(frame)
 
 def perform_subtraction(frame, bg_plate, fgMask):
+    fgMask = fgMask.astype(uint8)
     colored_mask = cv.bitwise_and(frame,frame,mask = fgMask)
     colored_bg_mask = cv.bitwise_and(bg_plate, bg_plate, mask = fgMask)
     # colored_mask = np.concatenate([frame, fgMask[:, :, np.newaxis]], axis=2)
