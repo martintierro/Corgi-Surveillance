@@ -120,28 +120,44 @@ def background_subtraction(filename, video_name):
         vid_mask = cv.cvtColor(fgMask.astype(np.uint8), cv.COLOR_GRAY2RGB)
         mask_out.write(vid_mask)
        
-        fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
+        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
         # fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
         # fgMask = cv.medianBlur(fgMask, 5)
-        cv.imshow("Mask", fgMask)
 
         
         frame_fg, frame_bg = perform_subtraction(frame, bg_plate, fgMask)
 
 
-        contours, hierarchy  = cv.findContours(blur, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
-
+        contours, hierarchy  = cv.findContours(fgMask, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+        
+        most_area = 0
+        most_cnt = None
         for cnt in contours:
-            area = cv.contourArea(cnt)         
-            if area > threshold_area:
-                x,y,w,h = cv.boundingRect(cnt)
-                frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+            area = cv.contourArea(cnt)     
+            if area > most_area:
+                most_area = area
+                most_cnt = cnt    
+            # if area > threshold_area:
+            #     x,y,w,h = cv.boundingRect(cnt)
+                # frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)            
         frame = frame.astype(np.uint8)
         box_out.write(frame)
+        if most_area != 0:
+            x,y,w,h = cv.boundingRect(most_cnt)
+            print("x:" + str(x) + " y:" + str(y) + " w:" + str(w) + " h:" + str(h))
+            if x==0:
+                x = 1
+            if y==0:
+                y = 1
+            bgdModel = np.zeros((1,65),np.float64)
+            fgdModel = np.zeros((1,65),np.float64)
+            cv.grabCut(frame,fgMask,(x,y,w,h),bgdModel,fgdModel,5,cv.GC_INIT_WITH_RECT)
+            fgMask = np.where((fgMask==2)|(fgMask==0),0,1).astype('uint8')
+        # cv.imshow("Bounding Box", frame)
+        # cv.imshow("Bounding Box", frame)
+        fgMask = fgMask * 255
+        # cv.imshow("Mask", fgMask)
 
-        # cv.imshow("Bounding Box", frame)
-        # cv.imshow("Bounding Box", frame)
-        # fgMask = fgMask * 255
         frame_bg = frame_bg.astype(np.uint8)
         frame_fg = frame_fg.astype(np.uint8)
 
@@ -202,8 +218,8 @@ def get_mask(img):
         cv.fillConvexPoly(mask, c[0], (255))
 
     # Smooth mask and blur it
-    # mask = cv.dilate(mask, None, iterations=10)
-    # mask = cv.erode(mask, None, iterations=10)
+    mask = cv.dilate(mask, None, iterations=5)
+    mask = cv.erode(mask, None, iterations=5)
     # mask = cv.GaussianBlur(mask, (21, 21), 0)
 
     return mask
