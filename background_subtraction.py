@@ -105,7 +105,8 @@ def background_subtraction(filename, video_name):
         frame = np.float32(frame)
         frame_bw = np.float32(frame_bw)
         bg_plate = np.float32(bg_plate)
-        fgMask = backSub.apply(frame)
+        # fgMask = backSub.apply(frame)
+        fgMask = get_mask(frame)
     
         # Get foreground Mask
         
@@ -120,10 +121,10 @@ def background_subtraction(filename, video_name):
         vid_mask = cv.cvtColor(fgMask.astype(np.uint8), cv.COLOR_GRAY2RGB)
         mask_out.write(vid_mask)
        
-        fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
+        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
         # fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
         # fgMask = cv.medianBlur(fgMask, 5)
-        cv.imshow("Mask", fgMask)
+        # cv.imshow("Mask", fgMask)
 
         
         frame_fg, frame_bg = perform_subtraction(frame, bg_plate, fgMask)
@@ -176,6 +177,8 @@ def background_subtraction(filename, video_name):
     cv.destroyAllWindows() 
 
 def get_mask(img):
+    img = img.astype(np.uint8)
+
     gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
     blurred = cv.GaussianBlur(img, (9, 9), 0)
 
