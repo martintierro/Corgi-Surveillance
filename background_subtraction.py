@@ -81,15 +81,6 @@ def background_subtraction(filename, video_name):
 
     frame_count = int(capture.get(cv.CAP_PROP_FRAME_COUNT))
     backSub = cv.bgsegm.createBackgroundSubtractorGSOC() 
-    # if frame_count < 120:
-    #     train(filename, backSub)
-    #     train(filename, backSub)
-    # else:
-    train(filename, backSub)
-    # train(filename, backSub)
-    # train(filename, backSub)
-    # train(filename, backSub)
-    # train(filename, backSub)
 
 
     
