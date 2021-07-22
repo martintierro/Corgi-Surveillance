@@ -8,7 +8,7 @@ def background_detection(filename, video_name):
     video = cv.VideoCapture(filename)
     frame_count = int(video.get(cv.CAP_PROP_FRAME_COUNT)) 
     if frame_count < 60:
-        FOI = frame_count
+        FOI = range(frame_count)
     else:
         FOI = frame_count * np.random.uniform(size=60) 
     frames = []
