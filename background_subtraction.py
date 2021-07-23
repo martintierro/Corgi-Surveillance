@@ -80,7 +80,16 @@ def background_subtraction(filename, video_name):
     fgMask = None
 
     frame_count = int(capture.get(cv.CAP_PROP_FRAME_COUNT))
-    backSub = cv.bgsegm.createBackgroundSubtractorGSOC() 
+    backSubGSOC = cv.bgsegm.createBackgroundSubtractorGSOC() 
+    backSubGMG = cv.bgsegm.createBackgroundSubtractorGMG()
+    backSubMOG2 = cv.createBackgroundSubtractorMOG2()
+
+    frame_count = int(capture.get(cv.CAP_PROP_FRAME_COUNT)) 
+    if frame_count < 120:
+        train(filename, backSubGMG)
+        train(filename, backSubGMG)
+    else:
+        train(filename, backSubGMG)
 
 
     
@@ -90,7 +99,12 @@ def background_subtraction(filename, video_name):
             break
         print("BG Subtraction Frame Number: " + str(counter) + "/" + str(frame_count))
         frame_bw = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
-        fgMask = backSub.apply(frame)
+        fgMaskGSOC = backSubGSOC.apply(frame)
+        fgMaskGMG = backSubGMG.apply(frame, 0.0005)
+        fgMaskMOG2 = backSubMOG2.apply(frame)
+        # fgMaskEdge = get_mask(frame)
+        fgMask = np.median([fgMaskGMG, fgMaskGSOC, fgMaskMOG2], axis=0).astype(dtype=np.uint8)  
+
         frame = np.float32(frame)
         frame_bw = np.float32(frame_bw)
         bg_plate = np.float32(bg_plate)
@@ -111,7 +125,7 @@ def background_subtraction(filename, video_name):
         # fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
         fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
         # fgMask = cv.medianBlur(fgMask, 5)
-        cv.imshow("Mask", fgMask)
+        cv.imshow(video_name, fgMask)
 
         
         frame_fg, frame_bg = perform_subtraction(frame, bg_plate, fgMask)
@@ -163,6 +177,40 @@ def background_subtraction(filename, video_name):
     # Closes all the frames
     cv.destroyAllWindows() 
 
+def get_mask(img):
+    img = img.astype(np.uint8)
+
+    gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
+    blurred = cv.GaussianBlur(img, (9, 9), 0)
+
+    # Edge detection 
+    edges = cv.Canny(gray, 100, 200)
+    edges = cv.dilate(edges, None)
+    edges = cv.erode(edges, None)
+
+    # Find contours in edges, sort by area 
+    contour_info = []
+    contours, _ = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+    for c in contours:
+        contour_info.append((
+            c,
+            cv.isContourConvex(c),
+            cv.contourArea(c),
+        ))
+    contour_info = sorted(contour_info, key=lambda c: c[2], reverse=True)
+    max_contour = contour_info[0]
+
+    # Create empty mask and flood fill
+    mask = np.zeros(edges.shape)
+    for c in contour_info:
+        cv.fillConvexPoly(mask, c[0], (255))
+
+    # Smooth mask and blur it
+    # mask = cv.dilate(mask, None, iterations=10)
+    # mask = cv.erode(mask, None, iterations=10)
+    # mask = cv.GaussianBlur(mask, (21, 21), 0)
+
+    return mask
 
 def train(filename, backSub):
     video = cv.VideoCapture()
@@ -174,8 +222,8 @@ def train(filename, backSub):
             break
         # frame = sr.upsample(frame)
         # frame = cv.detailEnhance(frame, sigma_s=10, sigma_r=0.15)
-        # frame = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
-        # frame = np.float32(frame)
+        frame = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
+        frame = np.float32(frame)
         fgMask = backSub.apply(frame)
 
 def perform_subtraction(frame, bg_plate, fgMask):
