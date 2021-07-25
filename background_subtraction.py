@@ -100,7 +100,7 @@ def background_subtraction(filename, video_name):
         print("BG Subtraction Frame Number: " + str(counter) + "/" + str(frame_count))
         frame_bw = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
         fgMaskGSOC = backSubGSOC.apply(frame)
-        fgMaskGMG = backSubGMG.apply(frame, 0.0005)
+        fgMaskGMG = backSubGMG.apply(frame_bw, 0.0005)
         fgMaskMOG2 = backSubMOG2.apply(frame)
         # fgMaskEdge = get_mask(frame)
         fgMask = np.median([fgMaskGMG, fgMaskGSOC, fgMaskMOG2], axis=0).astype(dtype=np.uint8)  
@@ -125,7 +125,7 @@ def background_subtraction(filename, video_name):
         # fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
         fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
         # fgMask = cv.medianBlur(fgMask, 5)
-        cv.imshow(video_name, fgMask)
+        # cv.imshow(video_name, fgMask)
 
         
         frame_fg, frame_bg = perform_subtraction(frame, bg_plate, fgMask)
