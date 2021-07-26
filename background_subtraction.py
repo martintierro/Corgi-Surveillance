@@ -130,7 +130,6 @@ def background_subtraction(filename, video_name):
         small_mask = cv.resize(fgMask, (frame_width//2,frame_height//2))
         small_frame = cv.resize(frame, (frame_width//2,frame_height//2))
         contours, hierarchy  = cv.findContours(small_mask, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
-        cv.imshow("Small Mask", small_mask)
         
         most_area = 0
         most_cnt = None
@@ -156,6 +155,7 @@ def background_subtraction(filename, video_name):
             cv.grabCut(small_frame,small_mask,(x,y,w,h),bgdModel,fgdModel,5,cv.GC_INIT_WITH_RECT)
             small_mask = np.where((small_mask==2)|(small_mask==0),0,1).astype('uint8')
             fgMask = cv.resize(small_mask, (frame_width*2,frame_height*2), interpolation=cv.INTER_NEAREST)
+        cv.imshow("Grab Cut Mask", fgMask)
 
         # cv.imshow("Bounding Box", frame)
         # cv.imshow("Bounding Box", frame)
