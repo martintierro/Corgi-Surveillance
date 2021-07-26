@@ -122,8 +122,8 @@ def background_subtraction(filename, video_name):
         vid_mask = cv.cvtColor(fgMask.astype(np.uint8), cv.COLOR_GRAY2RGB)
         mask_out.write(vid_mask)
        
-        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
-        fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
+        fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
+        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
         # fgMask = cv.medianBlur(fgMask, 5)
         # cv.imshow(video_name, fgMask)
 
