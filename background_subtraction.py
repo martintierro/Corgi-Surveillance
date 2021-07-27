@@ -122,8 +122,8 @@ def background_subtraction(filename, video_name):
         vid_mask = cv.cvtColor(fgMask.astype(np.uint8), cv.COLOR_GRAY2RGB)
         mask_out.write(vid_mask)
        
-        fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
-        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
+        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
+        fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
         # fgMask = cv.medianBlur(fgMask, 5)
         # cv.imshow(video_name, fgMask)
 
@@ -224,7 +224,7 @@ def train(filename, backSub):
         # frame = cv.detailEnhance(frame, sigma_s=10, sigma_r=0.15)
         frame = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
         frame = np.float32(frame)
-        fgMask = backSub.apply(frame)
+        fgMask = backSub.apply(frame, 0.5)
 
 def perform_subtraction(frame, bg_plate, fgMask):
     colored_mask = cv.bitwise_and(frame,frame,mask = fgMask)
