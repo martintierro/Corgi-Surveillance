@@ -98,10 +98,13 @@ def background_subtraction(filename, video_name):
         if frame is None:
             break
         print("BG Subtraction Frame Number: " + str(counter) + "/" + str(frame_count))
-        frame_bw = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
-        fgMaskGSOC = backSubGSOC.apply(frame)
+        frame = sr.upsample(frame)
+        unsharp_frame = unsharp_mask(frame)
+        cv.imshow("Unsharp Frame", unsharp_frame)
+        frame_bw = cv.cvtColor(unsharp_frame, cv.COLOR_RGB2GRAY)
+        fgMaskGSOC = backSubGSOC.apply(unsharp_frame)
         fgMaskGMG = backSubGMG.apply(frame_bw, 0.0005)
-        fgMaskMOG2 = backSubMOG2.apply(frame)
+        fgMaskMOG2 = backSubMOG2.apply(unsharp_frame)
         # fgMaskEdge = get_mask(frame)
         fgMask = np.median([fgMaskGMG, fgMaskGSOC, fgMaskMOG2], axis=0).astype(dtype=np.uint8)  
 
@@ -117,8 +120,7 @@ def background_subtraction(filename, video_name):
         # fgMask = cv.morphologyEx(fgMask,cv.MORPH_ERODE, kernel)
         # if checkImage(fgMask):
         #     fgMask = trimap(fgMask, 3, False)
-        fgMask = perform_interpolation_mask(fgMask, frame, scale, cv.INTER_NEAREST)
-        frame = sr.upsample(frame)
+        # fgMask = perform_interpolation_mask(fgMask, frame, scale, cv.INTER_NEAREST)
         vid_mask = cv.cvtColor(fgMask.astype(np.uint8), cv.COLOR_GRAY2RGB)
         mask_out.write(vid_mask)
        
@@ -220,8 +222,9 @@ def train(filename, backSub):
         ret, frame = video.read()
         if frame is None:
             break
-        # frame = sr.upsample(frame)
+        frame = sr.upsample(frame)
         # frame = cv.detailEnhance(frame, sigma_s=10, sigma_r=0.15)
+        frame = unsharp_mask(frame)
         frame = cv.cvtColor(frame, cv.COLOR_RGB2GRAY)
         frame = np.float32(frame)
         fgMask = backSub.apply(frame, 0.5)
@@ -270,3 +273,15 @@ def perform_interpolation_mask(mask, fromMat, scale, interpolationType):
     hrMat = cv.resize(mask, (newRows, newCols), scale, scale, interpolationType)
 
     return hrMat
+
+def unsharp_mask(image, kernel_size=(5, 5), sigma=1.0, amount=1.0, threshold=0):
+    """Return a sharpened version of the image, using an unsharp mask."""
+    blurred = cv.GaussianBlur(image, kernel_size, sigma)
+    sharpened = float(amount + 1) * image - float(amount) * blurred
+    sharpened = np.maximum(sharpened, np.zeros(sharpened.shape))
+    sharpened = np.minimum(sharpened, 255 * np.ones(sharpened.shape))
+    sharpened = sharpened.round().astype(np.uint8)
+    if threshold > 0:
+        low_contrast_mask = np.absolute(image - blurred) < threshold
+        np.copyto(sharpened, image, where=low_contrast_mask)
+    return sharpened
