@@ -100,13 +100,13 @@ def background_subtraction(filename, video_name):
         print("BG Subtraction Frame Number: " + str(counter) + "/" + str(frame_count))
         frame = sr.upsample(frame)
         unsharp_frame = unsharp_mask(frame)
-        cv.imshow("Unsharp Frame", unsharp_frame)
+        # cv.imshow("Unsharp Frame", unsharp_frame)
         frame_bw = cv.cvtColor(unsharp_frame, cv.COLOR_RGB2GRAY)
-        fgMaskGSOC = backSubGSOC.apply(unsharp_frame)
-        fgMaskGMG = backSubGMG.apply(frame_bw, 0.0005)
-        fgMaskMOG2 = backSubMOG2.apply(unsharp_frame)
+        # fgMaskGSOC = backSubGSOC.apply(unsharp_frame)
+        fgMask = backSubGMG.apply(frame_bw, 0.0005)
+        # fgMaskMOG2 = backSubMOG2.apply(unsharp_frame)
         # fgMaskEdge = get_mask(frame)
-        fgMask = np.median([fgMaskGMG, fgMaskGSOC, fgMaskMOG2], axis=0).astype(dtype=np.uint8)  
+        # fgMask = np.median([fgMaskGMG, fgMaskGSOC, fgMaskMOG2], axis=0).astype(dtype=np.uint8)  
 
         frame = np.float32(frame)
         frame_bw = np.float32(frame_bw)
@@ -125,8 +125,8 @@ def background_subtraction(filename, video_name):
         mask_out.write(vid_mask)
        
         # fgMask = cv.morphologyEx(fgMask,cv.MORPH_OPEN, kernel) 
-        fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
-        # fgMask = cv.medianBlur(fgMask, 5)
+        # fgMask = cv.morphologyEx(fgMask,cv.MORPH_CLOSE, kernel)
+        fgMask = cv.medianBlur(fgMask, 5)
         # cv.imshow(video_name, fgMask)
 
         
