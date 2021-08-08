@@ -45,11 +45,11 @@ def background_subtraction(filename, video_name):
     frame_width = int(capture.get(3))
     frame_height = int(capture.get(4))
     fps = capture.get(cv.CAP_PROP_FPS)
-    print(fps)
+    # print(fps)
 
     #Save Video
-    box_out = cv.VideoWriter('BoundingBox/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width * scale,frame_height * scale))
-    mask_out = cv.VideoWriter('Mask/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width * scale,frame_height * scale))
+    # box_out = cv.VideoWriter('BoundingBox/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width * scale,frame_height * scale))
+    # mask_out = cv.VideoWriter('Mask/'+video_name+".mp4", cv.VideoWriter_fourcc('M','J','P','G'), fps, (frame_width * scale,frame_height * scale))
 
     bg_plate = cv.imread("Background/" + video_name + ".png")
     # bg_plate = perform_interpolation(bg_plate, scale, cv.INTER_CUBIC)
@@ -100,8 +100,8 @@ def background_subtraction(filename, video_name):
         #Apply Median Blur
         fgMask = perform_interpolation_mask(fgMask, frame, scale, cv.INTER_NEAREST)
         # cv.imshow("FG Mask", fgMask)
-        vid_mask = cv.cvtColor(fgMask, cv.COLOR_GRAY2RGB)
-        mask_out.write(vid_mask)
+        # vid_mask = cv.cvtColor(fgMask, cv.COLOR_GRAY2RGB)
+        # mask_out.write(vid_mask)
         
         frame = sr.upsample(frame)
 
@@ -110,15 +110,9 @@ def background_subtraction(filename, video_name):
         # frame_cubic = perform_interpolation(frame, scale, cv.INTER_CUBIC)
         blur = cv.medianBlur(fgMask, 5)
  
-        # blur = cv.morphologyEx(blur,cv.MORPH_CLOSE, kernel)
-        # blur = cv.morphologyEx(blur,cv.MORPH_OPEN, kernel)
+
         
-        # Save Frame
-        # frame_linear = frame_linear.astype(np.uint8)
-        # cv.imwrite('Frames/'+video_name+'/Frame '+str(i)+'.png',frame_linear)
-        # frame_linear = np.float32(frame_linear)
-        
-        frame_fg, frame_bg = perform_subtraction(frame, bg_plate, fgMask)
+        # frame_fg, frame_bg = perform_subtraction(frame, bg_plate, fgMask)
         frame_fg_blur, frame_bg_blur = perform_subtraction(frame, bg_plate, blur)
         # frame_fg_cubic, frame_bg_cubic = perform_subtraction(frame_cubic, bg_plate, blur)
 
@@ -129,24 +123,24 @@ def background_subtraction(filename, video_name):
         # cv.imshow('image_background', frame_bg)
         # cv.imshow('image_foreground', frame_fg)
 
-        contours, hierarchy  = cv.findContours(blur, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+        # contours, hierarchy  = cv.findContours(blur, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
 
-        for cnt in contours:
-            area = cv.contourArea(cnt)         
-            if area > threshold_area:
-                x,y,w,h = cv.boundingRect(cnt)
-                frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-        frame = frame.astype(np.uint8)
-        box_out.write(frame)
+        # for cnt in contours:
+        #     area = cv.contourArea(cnt)         
+        #     if area > threshold_area:
+        #         x,y,w,h = cv.boundingRect(cnt)
+        #         frame_box = cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+        # frame = frame.astype(np.uint8)
+        # box_out.write(frame)
 
         # cv.imshow("Bounding Box", frame)
         
         fgMask = fgMask.astype(np.uint8)
         blur = blur.astype(np.uint8)
-        frame_bg = frame_bg.astype(np.uint8)
+        # frame_bg = frame_bg.astype(np.uint8)
         frame_bg_blur = frame_bg_blur.astype(np.uint8)
         # frame_bg_cubic = frame_bg_cubic.astype(np.uint8)
-        frame_fg = frame_fg.astype(np.uint8)
+        # frame_fg = frame_fg.astype(np.uint8)
         frame_fg_blur = frame_fg_blur.astype(np.uint8)
         # frame_fg_cubic = frame_fg_cubic.astype(np.uint8)
 
@@ -158,7 +152,7 @@ def background_subtraction(filename, video_name):
         # cv.imwrite('Foreground/Raw BG/'+video_name+'/Foreground '+str(i)+'.png',frame_fg)
 
 
-        cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.png',frame)
+        # cv.imwrite('BoundingBox/'+video_name+'/Box '+str(i)+'.png',frame)
         cv.imwrite('Foreground/'+video_name+'/Foreground '+str(i)+'.png',frame_fg_blur)
         cv.imwrite('Mask/'+video_name+'/BG Mask '+str(i)+'.png',blur)
         cv.imwrite('Background/'+video_name+'/Background '+str(i)+'.png',frame_bg_blur)
@@ -173,8 +167,6 @@ def background_subtraction(filename, video_name):
 
     # When everything done, release the video capture and video write objects
     capture.release()
-    box_out.release()
-    mask_out.release()
 
     # Closes all the frames
     cv.destroyAllWindows() 
