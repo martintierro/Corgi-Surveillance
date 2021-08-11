@@ -157,7 +157,7 @@ def background_subtraction(filename, video_name):
         cv.imwrite('Mask/'+video_name+'/BG Mask '+str(i)+'.png',blur)
         cv.imwrite('Background/'+video_name+'/Background '+str(i)+'.png',frame_bg_blur)
         # cv.imwrite('Background/Cubic Interpolation/'+video_name+'/Background '+str(i)+'.png',frame_bg_cubic)
-
+        cv.imshow("Background Subtraction of " + video_name, blur)
 
         i=i+1   
 

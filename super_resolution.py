@@ -71,11 +71,14 @@ def super_resolution(filename, video_name):
         result = combine_foreground(result, foreground, fg_mask)
 
         # result = cv.detailEnhance(result, sigma_s=1, sigma_r=0.05)
-
         result = result.astype(np.uint8)
 
         # cv.imwrite("Super Resolution/" + video_name + "/sr_" + str(i) + ".png", result)
         out.write(result)
+        cv.imshow("Super Resolved Frame of " + video_name, result)
+
+        keyboard = cv.waitKey(30)
+
     
     out.release()
 
