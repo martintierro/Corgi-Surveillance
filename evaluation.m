@@ -2,7 +2,7 @@ clc
 clear
 %% evaluation on Test Set
 addpath('metrics')
-video_name = {'Abandon Box',,'Backdoor', 'Bungalows', 'Highway',, 'Pedestrians', 'Person in Shade', 'PETS2006', 'Sofa', 'Street Light'};
+video_name = {'Abandon Box','Backdoor', 'Bungalows', 'Cubicle','Highway', 'Pedestrians', 'Person in Shade', 'PETS2006', 'Sofa', 'Street Light'};
 psnr_set = [];
 ssim_set = [];
 rmse_set = [];

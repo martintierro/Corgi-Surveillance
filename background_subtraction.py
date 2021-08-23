@@ -75,11 +75,6 @@ def background_subtraction(filename, video_name):
     fgMask = None
 
     frame_count = int(capture.get(cv.CAP_PROP_FRAME_COUNT)) 
-    if frame_count < 120:
-        train(filename, backSub)
-        train(filename, backSub)
-    else:
-        train(filename, backSub)
 
     
     while True:
