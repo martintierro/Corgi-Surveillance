@@ -5,7 +5,7 @@ Closed-circuit television (CCTV) footage is becoming increasingly used for secur
 
 This study explores a multi-frame method of enhancing CCTV videos recreated from the Eagle Eye framework of Del Gallego and Ilao using techniques observed from the field of background subtraction and multiframe super resolution (MISR). The application, Corgi Eye, reduces the ghosting artifacts in the video when performing MISR on frames with moving objects.
 
-
+<img src="img/Comparison KITTI - Person.jpg" width="800"/>
 
 ## Prerequisites
 - Windows 10 or above
