@@ -6,6 +6,7 @@ Closed-circuit television (CCTV) footage is becoming increasingly used for secur
 This study explores a multi-frame method of enhancing CCTV videos recreated from the Eagle Eye framework of Del Gallego and Ilao using techniques observed from the field of background subtraction and multiframe super resolution (MISR). The application, Corgi Eye, reduces the ghosting artifacts in the video when performing MISR on frames with moving objects.
 
 
+
 ## Prerequisites
 - Windows 10 or above
 - Python 3
@@ -38,3 +39,6 @@ python Corgi-Surveillance.py
 - Edit `video_name` to include all names of the folders that have frames of the outputted video(s)
 - Edit the path in `img_hr` to the path containing the ground truth frames. Ensure that the filenames of the frames are numbered sequentially exactly like `hr_0.png`
 - Run the script and the results will appear in the MATLAB Command Window
+
+## Acknowledgements
+This project is based from [Eagle Eye](https://github.com/NeilDG/EagleEyeSR).
