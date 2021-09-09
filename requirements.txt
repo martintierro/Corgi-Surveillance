@@ -1,2 +1,4 @@
-opencv-contrib-python >= 4.5.1
-natsort ~= 7.1.1
+matplotlib==3.3.4
+opencv_contrib_python==4.5.2.54
+natsort==7.1.1
+numpy==1.21.1
