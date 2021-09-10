@@ -10,20 +10,20 @@ Closed-circuit television (CCTV) footage is becoming increasingly used for secur
 
 This study explores a multi-frame method of enhancing CCTV videos recreated from the Eagle Eye framework of Del Gallego and Ilao using techniques observed from the field of background subtraction and multiframe super resolution (MISR). The application, Corgi Eye, reduces the ghosting artifacts in the video when performing MISR on frames with moving objects.
 
-<img src="img/Comparison KITTI Person.png" width="1000"/>
-<img src="img/Comparison Archer's Eye.png" width="1000"/>
-<img src="img/Comparison Pasig.png" width="1000"/>
+<img src="img/Comparison KITTI Person.png" width="1000" align="center"/>
+<img src="img/Comparison Archer's Eye.png" width="1000" align="center"/>
+<img src="img/Comparison Pasig.png" width="1000" align="center"/>
 
 ## System Architecture
 Upon inputting a video file, the input is subjected to frame extraction where the process of extracting every frame of the video is done. It then undergoes pre-processing, where the system gets an average of randomly selected frames to determine the background, and the background subtractor models the background. This would aid in the main image enhancement process which consists of background subtraction, super resolution, and image blending. The end result of the system is an enhanced video.
 
-<img src="img/Framework Architecture.png" width="700"/>
+<img src="img/Framework Architecture.png" width="700" align="center"/>
 
 ### Background Subtraction Architecture
-<img src="img/Background Subtraction Architecture.png" width="700"/>
+<img src="img/Background Subtraction Architecture.png" width="700" align="center"/>
 
 ### Super Resolution and Image Blending Architecture
-<img src="img/Super Resolution and Image Blending Architecture.png" width="700"/>
+<img src="img/Super Resolution and Image Blending Architecture.png" width="700" align="center"/>
 
 ## Prerequisites and Recommended System Requirements
 - Windows 10
