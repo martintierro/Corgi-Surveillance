@@ -17,9 +17,13 @@ This study explores a multi-frame method of enhancing CCTV videos recreated from
 ## System Architecture
 Upon inputting a video file, the input is subjected to frame extraction where the process of extracting every frame of the video is done. It then undergoes pre-processing, where the system gets an average of randomly selected frames to determine the background, and the background subtractor models the background. This would aid in the main image enhancement process which consists of background subtraction, super resolution, and image blending. The end result of the system is an enhanced video.
 
-<img src="img/Framework Architecture.png" width="1000"/>
-<img src="img/Background Subtraction Architecture.png" width="1000"/>
-<img src="img/Super Resolution and Image Blending Architecture.png" width="1000"/>
+<img src="img/Framework Architecture.png" width="700"/>
+
+### Background Subtraction Architecture
+<img src="img/Background Subtraction Architecture.png" width="700"/>
+
+### Super Resolution and Image Blending Architecture
+<img src="img/Super Resolution and Image Blending Architecture.png" width="700"/>
 
 ## Prerequisites and Recommended System Requirements
 - Windows 10
