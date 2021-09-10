@@ -20,14 +20,17 @@ Upon inputting a video file, the input is subjected to frame extraction where th
 <div align="center">
   <img src="img/Framework Architecture.png" width="700" />
 </div>
+
 ### Background Subtraction Architecture
 <div align="center">
   <img src="img/Background Subtraction Architecture.png" width="700" align="center"/>
 </div>
+
 ### Super Resolution and Image Blending Architecture
 <div align="center">
   <img src="img/Super Resolution and Image Blending Architecture.png" width="700" align="center"/>
 </div>
+
 ## Prerequisites and Recommended System Requirements
 - Windows 10
 - Python 3
