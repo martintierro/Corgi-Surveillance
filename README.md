@@ -4,7 +4,7 @@
 </span>
 
 # Corgi Eye
-
+By Martin Tierro, Jade Tan, and Jarrett Singian
 ## Introduction
 Closed-circuit television (CCTV) footage is becoming increasingly used for security and surveillance worldwide. Additionally, they are being used outside of security for purposes such as object or person recognition and tracking to monitor trends and to improve efficiency in a working environment. However, its effectiveness in these scenarios is heavily dependent on the quality of the footage.
 
