@@ -1,3 +1,8 @@
+<span>
+<img src="img/Game Lab Logo.png" width="50"/>&nbsp;&nbsp;&nbsp;
+<img src="img/DLSU Logo.png" width="50"/>
+</span>
+
 # Corgi Eye
 
 ## Introduction
@@ -6,11 +11,25 @@ Closed-circuit television (CCTV) footage is becoming increasingly used for secur
 This study explores a multi-frame method of enhancing CCTV videos recreated from the Eagle Eye framework of Del Gallego and Ilao using techniques observed from the field of background subtraction and multiframe super resolution (MISR). The application, Corgi Eye, reduces the ghosting artifacts in the video when performing MISR on frames with moving objects.
 
 <img src="img/Comparison KITTI Person.png" width="1000"/>
+<img src="img/Comparison Archer's Eye.png" width="1000"/>
+<img src="img/Comparison Pasig.png" width="1000"/>
 
-## Prerequisites
-- Windows 10 or above
+## System Architecture
+Upon inputting a video file, the input is subjected to frame extraction where the process of extracting every frame of the video is done. It then undergoes pre-processing, where the system gets an average of randomly selected frames to determine the background, and the background subtractor models the background. This would aid in the main image enhancement process which consists of background subtraction, super resolution, and image blending. The end result of the system is an enhanced video.
+
+<img src="img/Framework Architecture.png" width="1000"/>
+<img src="img/Background Subtraction Architecture.png" width="1000"/>
+<img src="img/Super Resolution and Image Blending Architecture.png" width="1000"/>
+
+## Prerequisites and Recommended System Requirements
+- Windows 10
 - Python 3
 - MATLAB (for obtaining metrics)
+- It is recommended that the script be placed on a large storage device due to the large amount of drive space that the system uses for storing processed frames.
+- The use of the software on devices with fewer than 16GB of RAM and 4 CPU cores has not been tested and your mileage may vary.
+
+
+
 
 
 ## Getting Started
@@ -21,9 +40,13 @@ This study explores a multi-frame method of enhancing CCTV videos recreated from
 git clone https://github.com/martintierro/Corgi-Surveillance.git
 cd Corgi-Surveillance
 ```
-
-- Install dependencies.
-  - Please type the command `pip install -r requirements.txt`.
+- Dependencies
+  - matplotlib==3.3.4
+  - opencv_contrib_python==4.5.2.54
+  - natsort==7.1.1
+  - numpy==1.21.1 
+   
+- Install dependencies using the command `pip install -r requirements.txt`.
 
 ### To Run
 ```bash
