@@ -1,6 +1,6 @@
 <span>
   <img src="img/Game Lab Logo.png" width="50"/>&nbsp;&nbsp;&nbsp;
-  <img src="img/DLSU Logo.png" width="50"/>
+  <img src="img/Corgi Logo.png" width="50"/>
 </span>
 
 # Corgi Eye
